@@ -1,0 +1,26 @@
+nav {
+    background-color: white;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 25px;
+    padding: 0px 15px
+}
+
+button {
+    background-color: #1F2833;
+    color: white;
+    border-radius: 10px;
+    padding: 10px 15px;
+}
+
+ul {
+    display: flex;
+    flex-direction: row;
+    padding: 0px;
+}
+
+li {
+    list-style-type: none;
+    padding: 10px 25px
+}
