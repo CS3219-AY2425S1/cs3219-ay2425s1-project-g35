@@ -3,3 +3,7 @@ body {
     padding: 0;
     background-color: #1F2833;
 }
+
+.question-list {
+    padding-top: 60px;
+}
