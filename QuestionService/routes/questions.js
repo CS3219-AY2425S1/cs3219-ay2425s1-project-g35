@@ -1,5 +1,3 @@
-// const db = require('../db/conn.js');
-const { ObjectId } = require('mongodb');
 var express = require('express');
 const connectToDatabase = require("../db/conn");
 var router = express.Router();
@@ -12,8 +10,18 @@ connectToDatabase().then(database => {
 /* GET single question. */
 router.get('/question', async (req, res, next) => {
     console.log(req.query.questionId);
+    const questionId = Number(req.query.questionId);
+    if (isNaN(questionId)) {
+        res.status(400).json({'error': 'Invalid Question ID'});
+        return;
+    }
     const collection = await db.collection('questions');
     const result = await collection.findOne({'Question ID': Number(req.query.questionId)});
+    if (!result) {
+        res.status(400).json({'error': 'Question Not Found'});
+        return;
+    }
+    delete result['_id'];
     res.json(result);
 });
 
@@ -31,7 +39,10 @@ router.get('/questions', async (req, res, next) => {
         query['Question Complexity'] = difficulty; // Query based on difficulty
     }
 
-    let result = await collection.find(query).toArray();
+    let result = await collection.find(query, {_id: 0}).toArray();
+    for (reslt of result) {
+        delete reslt['_id'];
+    }
     res.send(result);
 });
 
