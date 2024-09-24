@@ -1,0 +1,45 @@
+services:
+  # MongoDB Service
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+  # Seed MongoDB server with sample questions
+  mongo_seed:
+    image: mongo:latest
+    links:
+      - mongo
+    volumes:
+      - ./mongo-seed:/mongo-seed
+    command: /mongo-seed/import.sh
+    networks:
+      - app-network
+
+  # QuestionService
+  question-service:
+    build: ./QuestionService
+    container_name: question-service
+    ports:
+      - "4000:3000"
+    environment:
+      - MONGO_URI=mongodb://root:example@mongo:27017/
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
+volumes:
+  mongo-data:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge

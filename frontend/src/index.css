@@ -6,6 +6,14 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: "Poppins";
+    src: local("Poppins-Light"),
+         url('./assets/fonts/Poppins/Poppins-Light.ttf') format('truetype');
+    font-weight: 300; /* Light weight */
+    font-style: normal;
+}
+
 body {
     font-family: "Poppins", sans-serif;
 }

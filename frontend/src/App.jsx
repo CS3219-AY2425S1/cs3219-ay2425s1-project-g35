@@ -107,26 +107,23 @@ function App() {
     }
   ];
   
-
-  
-
-  
-
   useEffect(() => {
-    // const fetchQuestions = async () => {
-    //   try {
-    //     const response = await fetch('');
-    //     if (!response.ok) {
-    //       throw new Error('Network response was not ok');
-    //     }
-    //     const data = await response.json();
-    //     setQuestions(data);
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // }
-    // fetchQuestions();
-    setQuestions(sampleData);
+    const fetchQuestions = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/questions');
+        console.log(response);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        console.log(data);
+        setQuestions(data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchQuestions();
+
   }, [])
   
   
@@ -136,7 +133,7 @@ function App() {
       <div className='question-list'>
         <h1>Question List</h1>
           {questions.map((question) => (
-            <QuestionCard key={question.questionID} question={question} />
+            <QuestionCard key={question.questionID} question={question}/>
           ))}
       </div>
     </>

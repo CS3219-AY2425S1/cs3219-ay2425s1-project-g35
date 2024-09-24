@@ -1,17 +1,11 @@
-Here’s a sample `README.md` file for your **Question Service** using Express.js:
-
----
-
 # Question Service
 
 **Question Service** is a RESTful API built with Express.js to serve questions. This service allows clients to fetch random questions, categorized questions, or manage a database of questions based on their needs.
 
 ## Features
 
-- Fetch random questions
+- Fetch question
 - Fetch questions by category
-- Add, update, and delete questions
-- Simple API architecture using Express.js
 
 ## Requirements
 

@@ -1,0 +1,1 @@
+mongoimport --host mongo:27017 --authenticationDatabase=admin --username root --password example --db questions --collection questions --type csv --file /mongo-seed/sample_questions.csv --headerline
