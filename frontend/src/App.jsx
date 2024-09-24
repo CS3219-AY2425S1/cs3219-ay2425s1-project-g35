@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import Navbar from './components/Navbar'
-import QuestionCard from './components/QuestionCard';
+import QuestionTable from './components/QuestionTable';
 
 function App() {
 
@@ -107,11 +107,6 @@ function App() {
     }
   ];
   
-
-  
-
-  
-
   useEffect(() => {
     // const fetchQuestions = async () => {
     //   try {
@@ -134,10 +129,7 @@ function App() {
     <>
       <Navbar/>
       <div className='question-list'>
-        <h1>Question List</h1>
-          {questions.map((question) => (
-            <QuestionCard key={question.questionID} question={question} />
-          ))}
+          <QuestionTable questions={questions} />
       </div>
     </>
   )
