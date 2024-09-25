@@ -51,7 +51,7 @@ const QuestionTable = ({ questions }) => {
                   </p>
                 </td>
                 <td>
-                  <a href={question.link} target="_blank" rel="noopener noreferrer">
+                  <a href={question["Link"]} target="_blank" rel="noopener noreferrer">
                     View Problem
                   </a>
                 </td>
