@@ -7,6 +7,8 @@ connectToDatabase().then(database => {
     db = database;
 })
 
+const difficulties = ["Easy", "Medium", "Hard"];
+
 /* GET single question. */
 router.get('/question', async (req, res, next) => {
     console.log(req.query.questionId);
@@ -46,4 +48,126 @@ router.get('/questions', async (req, res, next) => {
     res.send(result);
 });
 
+/* POST add a question */
+router.post('/question', async (req, res) => {
+    const id = req.body.id;
+    const name = req.body.name;
+    const description = req.body.description;
+    const topics = req.body.topics;
+    const leetcode_link = req.body.leetcode_link;
+    const difficulty = req.body.difficulty;
+
+    // Check if request body is correctly filled
+    if (id === undefined || name === undefined || name === '' || description === undefined || description === '' ||
+    topics === undefined || difficulty === undefined) {
+        res.status(400).json({'error': 'Invalid Body'});
+    }
+    if (!difficulties.includes(difficulty)) {
+        res.status(400).json({'error': 'Invalid Difficulty'});
+        return;
+    }
+    const collection = await db.collection('questions');
+
+    // Check if a question with the same ID, Title or Description already exists
+    const existing_questions = await collection.find({}).toArray();
+    for (const question of existing_questions) {
+        if (question['Question ID'] === id || question['Question Title'] === name ||
+            question['Question Description'] === description ||
+            leetcode_link !== undefined && question.Link === leetcode_link) {
+            res.status(400).json({'error': 'Question already exists'});
+            return;
+        }
+    }
+    const new_question = {
+        "Question ID": id,
+        "Question Title": name,
+        "Question Description": description,
+        "Question Categories": topics,
+        "Link": leetcode_link,
+        "Question Complexity": difficulty,
+    }
+    const result = await collection.insertOne(new_question);
+    res.json(result);
+});
+
+router.delete('/question/:questionId', async (req, res) => {
+    const collection = await db.collection('questions');
+    const questionId = Number(req.params.questionId);
+    if (isNaN(questionId)) {
+        res.status(400).json({'error': 'Invalid Question ID'});
+        return;
+    }
+    const query = { 'Question ID': questionId };
+
+    const result = await collection.deleteOne(query);
+
+    // Check if successful deletion
+
+    if (result.deletedCount === 1) {
+
+        console.log("Successfully deleted one document.");
+        res.status(200).json({'success': true});
+        return;
+    } else {
+
+        console.log("No documents matched the query. Deleted 0 documents.");
+        res.status(400).json({'success': false});
+        return;
+    }
+});
+
+router.patch('/question/:questionId', async (req, res) => {
+    const questionId = Number(req.params.questionId);
+    if (isNaN(questionId)) {
+        res.status(400).json({'error': 'Invalid Question ID'});
+        return;
+    }
+    const name = req.body.name;
+    const description = req.body.description;
+    const topics = req.body.topics;
+    const leetcode_link = req.body.leetcode_link;
+    const difficulty = req.body.difficulty;
+
+    // Make sure question data is properly filled
+    if (name === undefined || name === '' || description === undefined || description === '' ||
+        topics === undefined || difficulty === undefined) {
+        res.status(400).json({'error': 'Invalid Body'});
+        return;
+    }
+    if (!difficulties.includes(difficulty)) {
+        res.status(400).json({'error': 'Invalid Difficulty'});
+        return;
+    }
+    const collection = await db.collection('questions');
+    // Check if a question with that Question ID exists
+    const query = { 'Question ID': questionId };
+    const existing_question = await collection.findOne(query);
+    if (!existing_question) {
+        res.status(400).json({'error': 'Question Not Found'});
+        return;
+    }
+    const id = existing_question['Question ID'];
+
+    // Check if updating will create a duplicate of other questions
+    const existing_questions = await collection.find({}).toArray();
+    for (const question of existing_questions) {
+        if (question['Question ID'] === id) { continue; }
+        if (question['Question Title'] === name ||
+            question['Question Description'] === description ||
+            leetcode_link !== undefined && question.Link === leetcode_link) {
+            res.status(400).json({'error': 'Question already exists'});
+            return;
+        }
+    }
+    const new_question = {
+        "Question ID": id,
+        "Question Title": name,
+        "Question Description": description,
+        "Question Categories": topics,
+        "Link": leetcode_link,
+        "Question Complexity": difficulty,
+    }
+    const result = await collection.replaceOne(query, new_question);
+    res.json(result);
+});
 module.exports = router;
