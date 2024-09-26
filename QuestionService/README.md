@@ -50,6 +50,10 @@ npm start
 
 The server will run on `http://localhost:3000` by default.
 
+### API Endpoints
+
+[OpenAPI Specifications](specs/openapi.yml)
+
 ### Environment Variables
 
 Create a `.env` file in the root directory of the project and add the following environment variables:
