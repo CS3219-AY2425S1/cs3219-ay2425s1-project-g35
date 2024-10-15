@@ -5,7 +5,7 @@ function useQuestionTable() {
 
     const fetchQuestions = async () => {
         try {
-            const response = await fetch('http://localhost:4000/questions');
+            const response = await fetch('http://localhost:4000/questions', {credentials: "include"});
             console.log(response);
             if (!response.ok) {
                 const errorData = await response.json();
@@ -28,7 +28,7 @@ function useQuestionTable() {
     const handleDelete = async (questionId) => {
         try {
             const response = await fetch(`http://localhost:4000/question/${questionId}`, {
-                method: 'DELETE',
+                method: 'DELETE', credentials: "include"
             });
             if (!response.ok) {
                 const errorData = await response.json();
@@ -50,6 +50,7 @@ function useQuestionTable() {
         try {
             const response = await fetch('http://localhost:4000/question', {
                 method: 'POST',
+                credentials: "include",
                 headers: {
                     'Content-Type': 'application/json', // Indicate that the request body is JSON
                 },
@@ -81,6 +82,7 @@ function useQuestionTable() {
         try {
             const response = await fetch(`http://localhost:4000/question/${questionId}`, {
                 method: 'PATCH',
+                credetials: "include",
                 headers: {
                     'Content-Type': 'application/json', // Indicate that the request body is JSON
                 },
