@@ -1,5 +1,5 @@
 services:
-  # MongoDB Service
+  # MongoDB Service for Question Service
   mongo:
     image: mongo:latest
     container_name: mongo
@@ -39,11 +39,52 @@ services:
     networks:
       - app-network
 
+  # MongoDB Service for UserService 
+  mongo_user:
+    image: mongo:latest
+    container_name: mongo_user
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+    ports:
+      - "27018:27017" 
+    volumes:
+      - mongo-user-data:/data/db
+    networks:
+      - app-network
+    
+  # UserService
+  user-service:
+    build: ./UserService
+    container_name: user-service
+    ports:
+      - "3001:3001"
+    environment:
+      - DB_LOCAL_URI=mongodb://root:example@mongo_user:27017
+      - ENV=DEV
+      - JWT_SECRET=you-can-replace-this-with-your-own-secret
+    depends_on:
+      - mongo_user
+    networks:
+      - app-network
+
+  # Frontend
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "8080:5173"
+    networks:
+      - app-network
+
 volumes:
   mongo-data:
     driver: local
   mongo-seed:
     driver: local
+  mongo-user-data:
+    driver: local
+  
 
 networks:
   app-network:

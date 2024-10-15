@@ -1,0 +1,229 @@
+* {
+    box-sizing: border-box;
+}
+
+.questionTable {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+
+.tableHeader {
+    width: 100%;
+    height: 10%;
+    background-color: #fffb;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tableSection {
+    width: 95%;
+    max-height: calc(89% - 1.6rem);
+    background-color: #fffb;
+
+    margin: .8rem auto;
+    border-radius: .8rem;
+
+    overflow: auto;
+    overflow: overlay;
+}
+
+.tableSection table {
+    width: 100%;
+    
+}
+
+.tableSection table, th, td {
+    border-collapse: collapse;
+    text-align: center;
+}
+
+.tableSection th {
+    padding: 1rem;
+}
+
+.tableSection td {
+    padding: 1rem 0rem;
+}
+
+.tableSection thead {
+    top: 0;
+    left: 0;
+    background-color: #d5d1defe;
+    cursor: pointer;
+    text-transform: capitalize;
+    width: 100%;
+}
+
+
+
+.tableSection tbody tr:nth-child(even) {
+    background-color: #0000000b;
+}
+
+.tableSection tbody tr:hover {
+    background-color: #fff6 !important;
+}
+
+.complexity {
+    padding: .4rem 0;
+    border-radius: 2rem;
+    text-align: center;
+}
+
+.complexity.easy {
+    background-color: #86e49d;
+    color: #006b21;
+}
+
+.complexity.medium {
+    background-color: #ebc474;
+}
+
+
+.complexity.hard {
+    background-color: #d893a3;
+    color: #b30021;
+}
+
+
+
+/* form css */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100; /* Ensure it's above the other content */
+}
+
+.modal {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 101;
+    max-width: 500px;
+    width: 100%;
+}
+
+.blurred {
+    filter: blur(2px);
+    pointer-events: none; 
+}
+
+.closeButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+}
+
+form h3 {
+    width: 100%;
+    text-align: center;
+    margin: 0px;
+}
+
+form div {
+    display: grid;
+}
+
+input {
+    border: none;
+    border:solid 1px #ccc;
+    border-radius: 10px;
+    padding: 10px
+}
+
+textarea {
+    border: none;
+    border:solid 1px #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    height: 100px;
+}
+
+ /* topic bubble */
+
+.topicsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.topicBubble {
+    background-color: #505050;
+    border: none;
+    border-radius: 20px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.selected {
+    background-color: #4caf50;
+    color: white;
+    border-color: #4caf50;
+}
+
+.difficultyContainer {
+    display: flex;
+    gap: 10px; /* Adjust spacing between buttons */
+    align-items: center;
+    justify-content: space-between;
+}
+
+.bubbleButton {
+    padding: 15px 30px;
+    border-radius: 30px;
+    border: none;
+    background-color: #d5d1defe; /* Default background color */
+    cursor: pointer;
+    text-align: center;
+    transition: background-color 0.1s ease;
+}
+
+.bubbleButton.selected.easy {
+    background-color: #86e49d;
+    color: #006b21;
+}
+
+.bubbleButton.selected.medium {
+    background-color: #ebc474;
+    color: #926100;
+}
+
+.bubbleButton.selected.hard {
+    background-color: #d893a3; 
+    color: #b30021;
+}
+
+form>button {
+    border-radius: 25px;
+    border: none;
+    margin: 25px 0px 15px 0px;
+    transition: background-color 0.3s ease;
+}
+
+form>button:hover {
+    background-color: #66FCF1;
+    color: black;
+}
