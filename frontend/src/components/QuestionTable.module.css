@@ -12,7 +12,10 @@
     width: 100%;
     height: 10%;
     background-color: #fffb;
-    padding: 10px 20px;
+    padding: 10px 10px;
+    padding-left: 30px;
+    margin: 10px;
+    border-radius: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;

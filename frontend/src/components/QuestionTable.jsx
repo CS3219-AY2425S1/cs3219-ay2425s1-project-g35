@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import styles from './QuestionTable.module.css'; // Import CSS Module
+import styles from './QuestionTable.module.css'; 
 import useQuestionTable from "../hooks/useQuestionTable";
 
 const QuestionTable = () => {

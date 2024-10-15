@@ -4,15 +4,19 @@ import QuestionTable from './components/QuestionTable';
 import LoginPage from './views/login-page/LoginPage';
 import MainPage from './views/main-page/MainPage';
 import RegisterPage from './views/register-page/RegisterPage';
+import MatchingPage from './views/matching-page/MatchingPage';
+
+import styles from './App.module.css';
 
 function App() {
   return (
-    <div className='App'>
+    <div className={styles.App}>
       <Router>
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<MainPage />}>
               <Route index element={<QuestionTable />} /> 
+              <Route path='/matching' element={<MatchingPage /> } />
             </Route>
           </Route>
 

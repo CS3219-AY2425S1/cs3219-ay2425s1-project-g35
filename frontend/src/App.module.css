@@ -1,11 +1,6 @@
 
-body {
-    margin: 0;
-    padding: 0;
-    background-color: #1F2833;
-}
-
 .App {
+    background-color: #1b1f24;
     display: flex;
     flex-direction: column;
     gap: 20px;

@@ -1,0 +1,99 @@
+/* Main container for the matchmaking page */
+.matchingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 500px;
+    margin: 20px;
+}
+
+/* Heading */
+.heading {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+/* Difficulty selection section */
+.difficultySection {
+    margin-bottom: 20px;
+}
+
+.difficultyButtons {
+    display: flex;
+    gap: 10px;
+}
+
+.difficultyButton {
+    padding: 10px 20px;
+    border: 2px solid transparent;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.difficultyButton.notSelected {
+    background-color: #ceccc6;
+    color: #908a7a;
+}
+
+.difficultyButton.selectedEasy {
+    background-color: #86e49d;
+    color: #006b21;
+}
+
+.difficultyButton.selectedMedium {
+    background-color: #ebc474;
+    color: #a28017;
+}
+
+.difficultyButton.selectedHard {
+    background-color: #d893a3;
+    color: #b30021;
+}
+
+/* Topics selection section */
+.topicsSection {
+    margin-bottom: 20px;
+}
+
+.topicsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.topicButton {
+    padding: 8px 12px;
+    border-radius: 20px;
+    background-color: #928f86;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.topicButton.selected {
+    background-color: #a989e3;
+    border-color: #7440cf;
+}
+
+/* Find Match button */
+.findMatchButton {
+    padding: 15px 30px;
+    background-color: #00bfa5;
+    color: white;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.findMatchButton:hover {
+    background-color: #00796b;
+}
