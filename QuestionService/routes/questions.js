@@ -8,9 +8,38 @@ connectToDatabase().then(database => {
 })
 
 const difficulties = ["Easy", "Medium", "Hard"];
+/* Verify user's token */
+async function verifyUser(token) {
+    try {
+        console.log("Verifying user " + token);
 
+        const response = await fetch('http://user-service:3001/auth/verify-token', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}` // Include the token in the header if required
+            },
+        });
+
+        if (!response.ok) {
+            // If response is not OK, handle the error
+            return false;
+        }
+
+        // const data = await response.json();
+
+        // Sending the data from the API call as the response
+        return true;
+    } catch (error) {
+        console.error("Error during authentication:", error);
+        return false;
+    }
+}
 /* GET single question. */
 router.get('/question', async (req, res, next) => {
+    const token = req.cookies.accessToken;
+    if (!await verifyUser(token)) {
+        return res.status(401).json({ message: "Authentication failed" });
+    }
     console.log(req.query.questionId);
     const questionId = Number(req.query.questionId);
     if (isNaN(questionId)) {
@@ -29,6 +58,10 @@ router.get('/question', async (req, res, next) => {
 
 /* GET multiple questions */
 router.get('/questions', async (req, res, next) => {
+    const token = req.cookies.accessToken;
+    if (!await verifyUser(token)) {
+        return res.status(401).json({ message: "Authentication failed" });
+    }
     console.log(req.query.questionId);
     const topic = req.query.topic;
     const difficulty = req.query.difficulty;
@@ -50,6 +83,10 @@ router.get('/questions', async (req, res, next) => {
 
 /* POST add a question */
 router.post('/question', async (req, res) => {
+    const token = req.cookies.accessToken;
+    if (!await verifyUser(token)) {
+        return res.status(401).json({ message: "Authentication failed" });
+    }
     const id = req.body.id;
     const name = req.body.name;
     const description = req.body.description;
@@ -91,6 +128,10 @@ router.post('/question', async (req, res) => {
 });
 
 router.delete('/question/:questionId', async (req, res) => {
+    const token = req.cookies.accessToken;
+    if (!await verifyUser(token)) {
+        return res.status(401).json({ message: "Authentication failed" });
+    }
     const collection = await db.collection('questions');
     const questionId = Number(req.params.questionId);
     if (isNaN(questionId)) {
@@ -117,6 +158,10 @@ router.delete('/question/:questionId', async (req, res) => {
 });
 
 router.patch('/question/:questionId', async (req, res) => {
+    const token = req.cookies.accessToken;
+    if (!await verifyUser(token)) {
+        return res.status(401).json({ message: "Authentication failed" });
+    }
     const questionId = Number(req.params.questionId);
     if (isNaN(questionId)) {
         res.status(400).json({'error': 'Invalid Question ID'});

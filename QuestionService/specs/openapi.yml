@@ -245,3 +245,11 @@ components:
                 example: "Invalid Question ID"
     ServerError:
       description: A server error occurred.
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: accessToken
+
+security:
+  - cookieAuth: []

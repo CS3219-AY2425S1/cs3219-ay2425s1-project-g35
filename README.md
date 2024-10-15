@@ -4,6 +4,11 @@
 
 ## Group: G35
 
+### Deployment
+#### Prerequisites
+1. Docker
+#### Steps
+1. Run `docker-compose up -d`
 ### Note:
 
 - You can choose to develop individual microservices within separate folders within this repository **OR** use individual repositories (all public) for each microservice.
