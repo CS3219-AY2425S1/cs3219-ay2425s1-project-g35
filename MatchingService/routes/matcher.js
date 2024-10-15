@@ -1,4 +1,3 @@
-const events = require('events');
 const express = require('express');
 const express_sse = require('express-sse');
 const router = express.Router();
@@ -32,6 +31,9 @@ const diffToTopicToUser = {
     'Hard': new Map()
 }
 
+// hash table of users to timers
+const userToTimeoutId = new Map();
+
 // queue to streamline order in which requests are processed
 const queue = [];
 
@@ -47,11 +49,22 @@ function updateQueue() {
             // get other user
             const userId2 = diffToTopicToUser[diffLevel].get(topic);
 
+            // send event signifying match found
+            sse.emit('matchFound', { user1: userId, user2: userId2 });
+
+            // get other user's timeoutId
+            const timeoutId2 = userToTimeoutId.get(userId2);
+
+            // clear other user's timer
+            clearTimeout(timeoutId2);
+
+            // delete other user's timer
+            userToTimeoutId.delete(userId2);
+
             // delete other user from hash table
             diffToTopicToUser[diffLevel].delete(topic);
 
-            // send event signifying match found
-            sse.emit('matchFound', { user1: userId, user2: userId2 });
+            return true;
         } else {
             // get other diffLevels in stated order
             const altDiffLevels = altDiffLevelOrders[diffLevel];
@@ -62,21 +75,34 @@ function updateQueue() {
                     // get other user
                     const userId2 = diffToTopicToUser[altDiffLevel].get(topic);
     
-                    // delete other user from hash table
-                    diffToTopicToUser[altDiffLevel].delete(topic);
-    
                     // send event signifying match found
                     sse.emit('matchFound', { user1: userId, user2: userId2 });
 
-                    return;
+                    // get other user's timeoutId
+                    const timeoutId2 = userToTimeoutId.get(userId2);
+
+                    // clear other user's timer
+                    clearTimeout(timeoutId2);
+
+                    // delete other user's timer
+                    userToTimeoutId.delete(userId2);
+
+                    // delete other user from hash table
+                    diffToTopicToUser[altDiffLevel].delete(topic);
+
+                    return true;
                 }
             }
 
             // if no one matches both topic AND diffLevel, put in hash table
-            diffToTopicToUser[diffLevel].set(topic, userId);                
+            diffToTopicToUser[diffLevel].set(topic, userId);  
+            return false;              
         }
     }
 }
+
+// for client to listen to events
+router.get('/events', sse.init);
 
 router.get('/', (req, res) => {
     // Returns queue view with the current queue data
@@ -112,42 +138,33 @@ router.post('/', (req, res) => {
     queue.push(queueElement);
     console.log(`User ${userIdVar} enqueued`);
 
-    updateQueue();
+    const success = updateQueue();
+    if (success) {
+        return;
+    }
 
     const timeoutId = setTimeout(() => {
         // Check if user is in the map
-        if (diffToTopicToUser[diffLevelVar].has(topic) && diffToTopicToUser[diffLevelVar].get(topicVar) == userIdVar) {
-            // User did not find match
-            diffToTopicToUser[diffLevelVar].delete(topic);
-
-            // send event signifying match not found (go back to criteria page, with retry and quit button)
+        if (diffToTopicToUser[diffLevelVar].has(topicVar) && diffToTopicToUser[diffLevelVar].get(topicVar) == userIdVar) {
+            // send event signifying match found
             sse.emit('matchNotFound', { user: userIdVar });
 
+            // clear timer
+            clearTimeout(timeoutId);
+
+            // delete user from diffToTopicToUser hash table
+            diffToTopicToUser[diffLevelVar].delete(topicVar);
+
+            // delete user from userToTimeoutId hash table
+            userToTimeoutId.delete(userIdVar, timeoutId);
+            
             console.log(`Match not found for ${userIdVar}!`);
-            res.json({ message: "Match not found!", userIdVar });
-            return;
+            return; // go back to criteria page, with retry and quit button
         }
     }, waitingTime);
-    
-    // Listen for the 'matchFound' event and clear the timeout if it occurs
-    sse.on('matchFound', (event) => {
-        data = event.data
 
-        // Check if the event relates to the current user
-        const user1 = data.user1;
-        const user2 = data.user2;
-        if (user1 == userIdVar) {
-            clearTimeout(timeoutId);
-            console.log(`Match found with ${user2}!`);
-            res.json({ message: `Match found with ${user2}!`});
-            return;
-        } else if (user2 == userIdVar) {
-            clearTimeout(timeoutId);
-            console.log(`Match found with ${user1}!`);
-            res.json({ message: `Match found with ${user1}!`});
-            return;
-        }
-    });
+    // put timeoutId in hash table
+    userToTimeoutId.set(userIdVar, timeoutId);
 });
 
 router.delete('/', (req, res) => {
@@ -156,7 +173,12 @@ router.delete('/', (req, res) => {
     const diffLevel = req.query.diffLevel;
     
     if (diffToTopicToUser[diffLevel].has(topic)) {
+        // delete user from diffToTopicToUser hash table
         diffToTopicToUser[diffLevel].delete(topic);
+
+        // delete user from userToTimeoutId hash table
+        userToTimeoutId.delete(userId);
+
         console.log("User deleted successfully from queue");
         res.json({ message: 'User deleted successfully from queue', userId });
     } else {
