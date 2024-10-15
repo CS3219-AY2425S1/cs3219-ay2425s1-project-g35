@@ -1,0 +1,62 @@
+services:
+  # MongoDB Service
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+
+  # Seed MongoDB server with sample questions
+  mongo_seed:
+    image: mongo:latest
+    container_name: mongo_seed
+    links:
+      - mongo
+    volumes:
+      - ./mongo-seed:/mongo-seed
+      - mongo-seed:/seed_set
+    command: /mongo-seed/import.sh
+    networks:
+      - app-network
+
+  # QuestionService
+  question-service:
+    build: ./QuestionService/Dockerfile.dev
+    container_name: question-service
+    volumes:
+      - ./QuestionService:/app
+    ports:
+      - "4000:3000"
+    environment:
+      - MONGO_URI=mongodb://root:example@mongo:27017/
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+
+  # Frontend
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "8080:5173"
+    networks:
+      - app-network
+    volumes:
+      - ./frontend:/app
+volumes:
+  mongo-data:
+    driver: local
+  mongo-seed:
+    driver: local
+
+networks:
+  app-network:
+    driver: bridge
