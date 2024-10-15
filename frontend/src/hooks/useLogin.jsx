@@ -27,7 +27,6 @@ const useLogin = () => {
                 throw new Error(errorData.message || 'Failed to login');
             }
             const data = await response.json();
-            console.log(data);
             console.log(`successfully login ${email}`);
             setCookie( "accessToken", data["data"]["accessToken"], { path: '/' } );
             setCookie( "userId", data["data"]["id"], { path: '/' } );
