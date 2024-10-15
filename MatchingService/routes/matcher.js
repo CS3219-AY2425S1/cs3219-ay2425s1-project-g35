@@ -1,7 +1,8 @@
 const events = require('events');
-const eventEmitter = new events.EventEmitter();
 const express = require('express');
+const express_sse = require('express-sse');
 const router = express.Router();
+const sse = new express_sse();
 const waitingTime = 60000;
 
 // hash table of waiting users
@@ -10,17 +11,17 @@ const queue = [];
 
 function updateQueue() {
     while (queue.length > 0) {
-        queueElement = queue.shift();
-        criteria = queueElement['criteria']
-        if (criteriaToUsers.contains(criteria)) {
-            userId1 = queueElement['userId']
-            userId2 = criteriaToUsers.get(criteria);
+        const queueElement = queue.shift();
+        const criteria = queueElement['criteria']
+        if (criteriaToUsers.has(criteria)) {
+            const userId1 = queueElement['userId']
+            const userId2 = criteriaToUsers.get(criteria);
 
             // delete other user from hash table
             criteriaToUsers.delete(criteria);
 
             // send event signifying match found
-            eventEmitter.emit('matchFound', { user1: userId1, user2: userId2 });
+            sse.emit('matchFound', { user1: userId1, user2: userId2 });
 
             // FOR FUTURE CONSIDERATION (collab service logic)
             // if question id not null, go to waiting room
@@ -38,18 +39,19 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    userIdVar = req.query.userId
+    const userIdVar = req.query.userId
     if (isNaN(userIdVar)) {
+        console.log('Invalid User ID');
         res.status(400).json({'error': 'Invalid User ID'});
         return;
     }
 
-    criteriaVar = {
+    const criteriaVar = {
         questionId: req.query.questionId,
         topic: req.query.topic,
         diffLevel: req.query.diffLevel
     }
-    queueElement = {
+    const queueElement = {
         userId: userIdVar,
         criteria: criteriaVar
     }
@@ -69,7 +71,9 @@ router.post('/', (req, res) => {
     }, waitingTime);
     
     // Listen for the 'matchFound' event and clear the timeout if it occurs
-    eventEmitter.on('matchFound', (data) => {
+    sse.on('matchFound', (event) => {
+        data = event.data
+
         // Check if the event relates to the current user
         userId1 = data.userId1;
         userId2 = data.userId2;
@@ -86,8 +90,8 @@ router.post('/', (req, res) => {
 });
 
 router.delete('/', (req, res) => {
-    userId = req.query.userId;
-    key = {
+    const userId = req.query.userId;
+    const key = {
         questionId: req.query.questionId,
         topic: req.query.topic,
         diffLevel: req.query.diffLevel
