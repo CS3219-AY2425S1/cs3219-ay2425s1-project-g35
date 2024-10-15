@@ -5,29 +5,75 @@ const router = express.Router();
 const sse = new express_sse();
 const waitingTime = 60000;
 
+// if no exact match for diffLevel and topic, look in other diffLevels in order below
+/*
+    For example, user A wants topic "Dynamic Programming", and diffLevel "Hard",
+    but there is no exact match,
+    so system first searches "Medium" for "Dynamic Programming"
+    then lastly "Easy" for "Dynamic Programming"
+*/
+const altDiffLevelOrders = {
+    'Easy': ['Medium', 'Hard'],
+    'Medium': ['Hard', 'Easy'],
+    'Hard': ['Medium', 'Easy']
+}
+
 // hash table of waiting users
-const criteriaToUsers = new Map();
+/* structure:
+{
+    Easy: [topic 1: user A], [topic 2: user B]...
+    Medium: Easy: [topic 3, user C], [topic 4, user D]...
+    Hard: [topic 2: user E], [topic 4: user F]...
+}
+*/
+const diffToTopicToUser = {
+    'Easy': new Map(),
+    'Medium': new Map(),
+    'Hard': new Map()
+}
+
+// queue to streamline order in which requests are processed
 const queue = [];
 
 function updateQueue() {
     while (queue.length > 0) {
         const queueElement = queue.shift();
-        const criteria = queueElement['criteria']
-        if (criteriaToUsers.has(criteria)) {
-            const userId1 = queueElement['userId']
-            const userId2 = criteriaToUsers.get(criteria);
+
+        const userId = queueElement['userId'];
+        const topic = queueElement['criteria']['topic'];
+        const diffLevel = queueElement['criteria']['diffLevel'];
+
+        if (diffToTopicToUser[diffLevel].has(topic)) { // someone matches both diffLevel and topic
+            // get other user
+            const userId2 = diffToTopicToUser[diffLevel].get(topic);
 
             // delete other user from hash table
-            criteriaToUsers.delete(criteria);
+            diffToTopicToUser[diffLevel].delete(topic);
 
             // send event signifying match found
-            sse.emit('matchFound', { user1: userId1, user2: userId2 });
-
-            // FOR FUTURE CONSIDERATION (collab service logic)
-            // if question id not null, go to waiting room
-            // if null, pick random question based on diffLevel and topic
+            sse.emit('matchFound', { user1: userId, user2: userId2 });
         } else {
-            criteriaToUsers.set(criteria, queueElement['userId']);
+            // get other diffLevels in stated order
+            const altDiffLevels = altDiffLevelOrders[diffLevel];
+
+            // find those with same topic, different diffLevel
+            for (const altDiffLevel of altDiffLevels) {
+                if (diffToTopicToUser[altDiffLevel].has(topic)) { // someone matches topic but not diffLevel
+                    // get other user
+                    const userId2 = diffToTopicToUser[altDiffLevel].get(topic);
+    
+                    // delete other user from hash table
+                    diffToTopicToUser[altDiffLevel].delete(topic);
+    
+                    // send event signifying match found
+                    sse.emit('matchFound', { user1: userId, user2: userId2 });
+
+                    return;
+                }
+            }
+
+            // if no one matches both topic AND diffLevel, put in hash table
+            diffToTopicToUser[diffLevel].set(topic, userId);                
         }
     }
 }
@@ -35,25 +81,32 @@ function updateQueue() {
 router.get('/', (req, res) => {
     // Returns queue view with the current queue data
     updateQueue();
-    res.json(criteriaToUsers);
+    res.json(diffToTopicToUser);
 });
 
 router.post('/', (req, res) => {
-    const userIdVar = req.query.userId
+    const userIdVar = req.query.userId;
+    const topicVar = req.query.topic;
+    const diffLevelVar = req.query.diffLevel;
+
     if (isNaN(userIdVar)) {
         console.log('Invalid User ID');
         res.status(400).json({'error': 'Invalid User ID'});
         return;
     }
 
-    const criteriaVar = {
-        questionId: req.query.questionId,
-        topic: req.query.topic,
-        diffLevel: req.query.diffLevel
+    if (topicVar == null || diffLevelVar == null) {
+        console.log('Invalid criteria');
+        res.status(400).json({'error': 'Invalid criteria'});
+        return;
     }
+ 
     const queueElement = {
         userId: userIdVar,
-        criteria: criteriaVar
+        criteria: {
+            topic: topicVar,
+            diffLevel: diffLevelVar 
+        }
     }
 
     queue.push(queueElement);
@@ -62,11 +115,17 @@ router.post('/', (req, res) => {
     updateQueue();
 
     const timeoutId = setTimeout(() => {
-        // Check if user is still in the map
-        if (criteriaToUsers.has(criteriaVar) && criteriaToUsers.get(criteriaVar) == userIdVar) {
+        // Check if user is in the map
+        if (diffToTopicToUser[diffLevelVar].has(topic) && diffToTopicToUser[diffLevelVar].get(topicVar) == userIdVar) {
             // User did not find match
+            diffToTopicToUser[diffLevelVar].delete(topic);
+
+            // send event signifying match not found (go back to criteria page, with retry and quit button)
+            sse.emit('matchNotFound', { user: userIdVar });
+
             console.log(`Match not found for ${userIdVar}!`);
             res.json({ message: "Match not found!", userIdVar });
+            return;
         }
     }, waitingTime);
     
@@ -75,34 +134,34 @@ router.post('/', (req, res) => {
         data = event.data
 
         // Check if the event relates to the current user
-        userId1 = data.userId1;
-        userId2 = data.userId2;
-        if (userId1 == userIdVar) {
+        const user1 = data.user1;
+        const user2 = data.user2;
+        if (user1 == userIdVar) {
             clearTimeout(timeoutId);
-            console.log(`Match found with ${userId2}!`);
-            res.json({ message: `Match found with ${userId2}!`});
-        } else if (userId2 == userIdVar) {
+            console.log(`Match found with ${user2}!`);
+            res.json({ message: `Match found with ${user2}!`});
+            return;
+        } else if (user2 == userIdVar) {
             clearTimeout(timeoutId);
-            console.log(`Match found with ${userId1}!`);
-            res.json({ message: `Match found with ${userId1}!`});
+            console.log(`Match found with ${user1}!`);
+            res.json({ message: `Match found with ${user1}!`});
+            return;
         }
     });
 });
 
 router.delete('/', (req, res) => {
     const userId = req.query.userId;
-    const key = {
-        questionId: req.query.questionId,
-        topic: req.query.topic,
-        diffLevel: req.query.diffLevel
-    };
+    const topic = req.query.topic;
+    const diffLevel = req.query.diffLevel;
     
-    if (criteriaToUsers.has(key)) {
-        criteriaToUsers.delete(key);
-        res.json({ message: 'Key deleted successfully', key });
+    if (diffToTopicToUser[diffLevel].has(topic)) {
+        diffToTopicToUser[diffLevel].delete(topic);
+        console.log("User deleted successfully from queue");
+        res.json({ message: 'User deleted successfully from queue', userId });
     } else {
-        queue.filter(user => user['userId'] != userId);
-        res.json({ message: 'Key not found', key });
+        console.log("User not found in queue");
+        res.json({ message: 'User not found in queue', userId });
     }
 });
 
