@@ -50,26 +50,36 @@ function updateQueue() {
             const userId2 = diffToTopicToUser[diffLevel].get(topic);
 
             // send event signifying match found
+            console.log(`Emitting matchFound event for ${userId} and ${userId2}...`);
             sse.emit('matchFound', { user1: userId, user2: userId2 });
         } else {
             // get other diffLevels in stated order
             const altDiffLevels = altDiffLevelOrders[diffLevel];
 
+            // boolean variable to prevent unnecessary hash table insertion
+            let hasPartialMatch = false;
+
             // find those with same topic, different diffLevel
             for (const altDiffLevel of altDiffLevels) {
                 if (diffToTopicToUser[altDiffLevel].has(topic)) { // someone matches topic but not diffLevel
+                    hasPartialMatch = true;
+
                     // get other user
                     const userId2 = diffToTopicToUser[altDiffLevel].get(topic);
     
                     // send event signifying match found
-                    console.log("Emitting matchFound event...");
+                    console.log(`Emitting matchFound event for ${userId} and ${userId2}...`);
                     sse.emit('matchFound', { user1: userId, user2: userId2 });
+
+                    break;
                 }
             }
 
             // if no one matches both topic AND diffLevel, put in hash table
-            diffToTopicToUser[diffLevel].set(topic, userId);     
-            console.log(diffToTopicToUser);
+            if (!hasPartialMatch) {
+                diffToTopicToUser[diffLevel].set(topic, userId);     
+                console.log(diffToTopicToUser);
+            }
         }
     }
 }
@@ -92,7 +102,6 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
     const userIdVar = req.body.userId;
-    console.log(userIdVar);
     const topicVar = req.body.topic;
     const diffLevelVar = req.body.diffLevel;
 
@@ -129,7 +138,7 @@ router.post('/', (req, res) => {
         // Check if user is in the map
         if (diffToTopicToUser[diffLevelVar].has(topicVar) && diffToTopicToUser[diffLevelVar].get(topicVar) == userIdVar) {
             // send event signifying match found
-            console.log('Emitting matchNotFound event');
+            console.log(`Emitting matchNotFound event for ${userIdVar}...`);
             sse.emit('matchNotFound', { user: userIdVar });
 
             // delete user from diffToTopicToUser hash table
