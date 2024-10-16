@@ -1,3 +1,14 @@
+html, body {
+    font-family: 'Roboto';
+    height: 100%; 
+    margin: 0;    
+    padding: 0;
+}
+
+button {
+    font-family: 'Roboto', sans-serif;
+    font-size: 0.9rem;
+}
 
 .App {
     background-color: #1b1f24;

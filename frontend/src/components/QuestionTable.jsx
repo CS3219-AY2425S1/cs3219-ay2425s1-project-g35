@@ -135,7 +135,7 @@ const QuestionTable = () => {
     <div className={styles.questionTable}>
       <section className={showForm ? `${styles.tableHeader} ${styles.blurred}` : styles.tableHeader}>
         <h1>Question List</h1>
-        <button onClick={toggleForm}>Add Question</button>
+        <button className={styles.questionButton} onClick={toggleForm}>Add Question</button>
       </section>
 
       {showForm && (
@@ -234,8 +234,8 @@ const QuestionTable = () => {
                   </a>
                 </td>
                 <td className={styles.buttons}>
-                  <button onClick={() => handleEditClick(question)}>Edit</button>
-                  <button onClick={() => handleDelete(question["Question ID"])}>delete</button>
+                  <button className={styles.questionButton} onClick={() => handleEditClick(question)}>Edit</button>
+                  <button className={styles.questionButton} onClick={() => handleDelete(question["Question ID"])}>Delete</button>
                 </td>
                 <td>
 

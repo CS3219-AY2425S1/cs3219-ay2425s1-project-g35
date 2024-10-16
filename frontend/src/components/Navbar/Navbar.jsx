@@ -6,7 +6,7 @@ const Navbar = () => {
     return (
         <div className={styles.nav}>
             <nav>
-                <button className={styles.button} onClick={() => { handleLogout() }}> Log out </button>
+                <button className={styles.navButton} onClick={() => { handleLogout() }}> Log out </button>
             </nav>
         </div>
 

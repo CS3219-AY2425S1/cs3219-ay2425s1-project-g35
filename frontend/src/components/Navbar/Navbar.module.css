@@ -11,9 +11,9 @@ nav {
     width: 100%;
 }
 
-button {
-    background-color: black;
-    color: white;
+.navButton {
+    background-color: white;
+    color: black;
     margin-top: 10px;
     margin-right: 10px;
     border-radius: 10px;

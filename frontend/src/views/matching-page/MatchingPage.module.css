@@ -1,45 +1,72 @@
-/* Main container for the matchmaking page */
+.matchingPage {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.leftSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .matchingContainer {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: flex-start;
-    padding: 20px;
+    color: white;
+    padding: 40px;
     border-radius: 10px;
-    background-color: #ffffff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 500px;
+}
+
+.rightSection {
+    flex: 1;
+    background-color: #1f2937;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
     margin: 20px;
 }
 
-/* Heading */
 .heading {
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 20px;
+    color: white;
 }
 
-/* Difficulty selection section */
 .difficultySection {
     margin-bottom: 20px;
+    width: 100%
 }
 
 .difficultyButtons {
     display: flex;
     gap: 10px;
+    width: 100%;
 }
 
 .difficultyButton {
-    padding: 10px 20px;
+    flex: 1; 
+    padding: 10px 20px; 
     border: 2px solid transparent;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    text-align: center;
 }
 
 .difficultyButton.notSelected {
     background-color: #ceccc6;
-    color: #908a7a;
+    color: black;
 }
 
 .difficultyButton.selectedEasy {
@@ -59,33 +86,42 @@
 
 /* Topics selection section */
 .topicsSection {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .topicsContainer {
-    display: flex;
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, 1fr);
     flex-wrap: wrap;
     gap: 10px;
 }
 
 .topicButton {
     padding: 8px 12px;
-    border-radius: 20px;
-    background-color: #928f86;
+    border-radius: 10px;
     border: 1px solid #ccc;
     cursor: pointer;
+    margin: 5px;
+    margin-right: 10px;
     transition: background-color 0.3s ease;
 }
 
-.topicButton.selected {
+.topicButton.topicNotSelected {
+    background-color: #ceccc6;
+    color: black;
+}
+
+.topicButton.topicSelected {
     background-color: #a989e3;
     border-color: #7440cf;
 }
 
-/* Find Match button */
 .findMatchButton {
     padding: 15px 30px;
-    background-color: #00bfa5;
+    margin-bottom: 20px;
+    width: 100%;
+    background-color: #2864ec;
     color: white;
     font-size: 1.2rem;
     border: none;
@@ -95,5 +131,11 @@
 }
 
 .findMatchButton:hover {
-    background-color: #00796b;
+    background-color: #204cdc;
+}
+
+.findMatchButtonDisabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.7;
 }

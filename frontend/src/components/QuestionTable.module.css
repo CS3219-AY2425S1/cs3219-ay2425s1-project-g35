@@ -230,3 +230,11 @@ form>button:hover {
     background-color: #66FCF1;
     color: black;
 }
+
+.questionButton {
+    background-color: white;
+    color: black;
+    border-radius: 10px;
+    margin-left: 10px;
+    padding: 10px 10px;
+}
