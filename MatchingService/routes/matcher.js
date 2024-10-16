@@ -62,6 +62,7 @@ function updateQueue() {
                     const userId2 = diffToTopicToUser[altDiffLevel].get(topic);
     
                     // send event signifying match found
+                    console.log("Emitting matchFound event...");
                     sse.emit('matchFound', { user1: userId, user2: userId2 });
                 }
             }
@@ -82,9 +83,10 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    const userIdVar = req.query.userId;
-    const topicVar = req.query.topic;
-    const diffLevelVar = req.query.diffLevel;
+    const userIdVar = req.body.userId;
+    console.log(userIdVar);
+    const topicVar = req.body.topic;
+    const diffLevelVar = req.body.diffLevel;
 
     if (userIdVar == null) {
         console.log('Invalid User ID');
@@ -111,6 +113,7 @@ router.post('/', (req, res) => {
     // enqueue user
     queue.push(queueElement);
     console.log(`User ${userIdVar} enqueued`);
+    res.json({'message': `User ${userIdVar} enqueued`});
 
     updateQueue();
 
@@ -138,12 +141,10 @@ router.post('/', (req, res) => {
     // put timeoutId in hash table
     userToTimeoutId.set(userIdVar, timeoutId);
 
-    sse.on('matchFound', (event) => {
-        data = event.data
-
+    sse.on('matchFound', (data) => {
         // Check if the event relates to the current user
-        const userId1 = data.userId1;
-        const userId2 = data.userId2;
+        const userId1 = data.user1;
+        const userId2 = data.user2;
         if (userId1 == userIdVar || userId2 == userIdVar) {
             // clear timer
             clearTimeout(timeoutId);
@@ -161,9 +162,9 @@ router.post('/', (req, res) => {
 });
 
 router.delete('/', (req, res) => {
-    const userId = req.query.userId;
-    const topic = req.query.topic;
-    const diffLevel = req.query.diffLevel;
+    const userId = req.body.userId;
+    const topic = req.body.topic;
+    const diffLevel = req.body.diffLevel;
     
     if (diffToTopicToUser[diffLevel].has(topic)) {
         // get user's timeoutId

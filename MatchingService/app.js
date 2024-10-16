@@ -4,7 +4,7 @@ const app = express();
 // const logger = require('./middleware/logger')
 const matcher = require('./routes/matcher')
 // const path = require('path');
-const port = process.env.PORT;
+const port = 3000;
 
 // Set up EJS as the view engine
 // app.set('view engine', 'ejs');
