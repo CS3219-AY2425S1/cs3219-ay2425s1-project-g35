@@ -68,7 +68,8 @@ function updateQueue() {
             }
 
             // if no one matches both topic AND diffLevel, put in hash table
-            diffToTopicToUser[diffLevel].set(topic, userId);             
+            diffToTopicToUser[diffLevel].set(topic, userId);     
+            console.log(diffToTopicToUser);
         }
     }
 }
@@ -77,9 +78,16 @@ function updateQueue() {
 router.get('/events', sse.init);
 
 router.get('/', (req, res) => {
-    // Returns queue view with the current queue data
     updateQueue();
-    res.json(diffToTopicToUser);
+
+    // convert each map to JSON first
+    const newHashTable = {
+        'Easy': JSON.stringify(Object.fromEntries(diffToTopicToUser['Easy'])),
+        'Medium': JSON.stringify(Object.fromEntries(diffToTopicToUser['Medium'])),
+        'Hard': JSON.stringify(Object.fromEntries(diffToTopicToUser['Hard']))
+    }
+
+    res.json(newHashTable);
 });
 
 router.post('/', (req, res) => {
