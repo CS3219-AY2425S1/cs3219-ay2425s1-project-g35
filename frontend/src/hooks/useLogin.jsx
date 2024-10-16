@@ -29,8 +29,8 @@ const useLogin = () => {
             const data = await response.json();
             console.log(data);
             console.log(`successfully login ${email}`);
-            setCookie( "accessToken", data["accessToken"], { path: '/' } );
-            setCookie( "userId", data["id"], { path: '/' } );
+            setCookie( "accessToken", data["data"]["accessToken"], { path: '/' } );
+            setCookie( "userId", data["data"]["id"], { path: '/' } );
             navigate("/", { replace: true} );
         } catch (error) {
             setIsInvalidLogin(true);
