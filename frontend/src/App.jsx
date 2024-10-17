@@ -15,8 +15,8 @@ function App() {
         <Routes>
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<MainPage />}>
-              <Route index element={<QuestionTable />} /> 
-              <Route path='/matching' element={<MatchingPage /> } />
+              {/* <Route index element={<QuestionTable />} />  */}
+              <Route path='/' element={<MatchingPage /> } />
             </Route>
           </Route>
 
