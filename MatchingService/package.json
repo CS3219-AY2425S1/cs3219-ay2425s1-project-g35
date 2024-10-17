@@ -1,0 +1,17 @@
+{
+  "name": "matching-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app",
+    "dev": "node --watch --env-file=.env app"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.0",
+    "express-sse": "^0.5.3"
+  }
+}
