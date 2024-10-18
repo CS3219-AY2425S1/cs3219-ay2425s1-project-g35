@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './CountDownTimer.module.css';
 
-const CountdownTimer = ({ initialSeconds, start, handleCancelMatch }) => {
+const CountdownTimer = ({ initialSeconds, start }) => {
     const [seconds, setSeconds] = useState(initialSeconds);
     const [step, setStep] = useState(0);
     const icons = ['', '🖥️', '🖥️⏱️', '🖥️⏱️🕒'];
@@ -16,10 +16,6 @@ const CountdownTimer = ({ initialSeconds, start, handleCancelMatch }) => {
         const iconIntervalId = setInterval(() => {
             setStep((prevStep) => (prevStep + 1) % icons.length);
         }, 1000);
-
-        if (seconds <= 1) {
-            handleCancelMatch(); 
-        }
 
         return () => {
             clearInterval(intervalId);

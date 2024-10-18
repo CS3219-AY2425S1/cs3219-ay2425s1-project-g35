@@ -55,7 +55,7 @@ const MatchingPage = () => {
         console.log("Finding match with:", selectedDifficulty, selectedTopic);
     };
 
-    // Should be called on time out or when cancel button is pressed 
+    // Should be called when cancel button is pressed 
     const handleCancelMatch = () => {
         console.log('handleCancelMatch is called');
         deleteUserFromQueue(selectedTopic, selectedDifficulty);
@@ -64,7 +64,7 @@ const MatchingPage = () => {
     }
 
     useEffect(() => {
-        console.log(`${isMatchSuccessful}`);
+        console.log(`isMatchSuccessful: ${isMatchSuccessful}`);
         if (isMatchSuccessful === true) {
             setStatusMessage("Match found! Get ready!");
         } else if (isMatchSuccessful === false) {
@@ -132,7 +132,7 @@ const MatchingPage = () => {
             <div className={styles.rightSection}>
                 {timerStart ? (
                     <>
-                        <CountdownTimer initialSeconds={TIMEOUT} start={timerStart} handleCancelMatch={handleCancelMatch} />
+                        <CountdownTimer initialSeconds={TIMEOUT} start={timerStart} />
                         <button
                             className={`${styles.findMatchButton}`}
                             disabled={!timerStart}
