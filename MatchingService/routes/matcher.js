@@ -1,7 +1,10 @@
 const express = require('express');
 const express_sse = require('express-sse');
+const cors = require('cors');
+
 const router = express.Router();
 const sse = new express_sse();
+
 const waitingTime = 60000;
 
 // if no exact match for diffLevel and topic, look in other diffLevels in order below
@@ -66,7 +69,7 @@ function updateQueue() {
 
                     // get other user
                     const userId2 = diffToTopicToUser[altDiffLevel].get(topic);
-    
+
                     // send event signifying match found
                     console.log(`Emitting matchFound event for ${userId} and ${userId2}...`);
                     sse.emit('matchFound', { user1: userId, user2: userId2 });
@@ -77,7 +80,7 @@ function updateQueue() {
 
             // if no one matches both topic AND diffLevel, put in hash table
             if (!hasPartialMatch) {
-                diffToTopicToUser[diffLevel].set(topic, userId);     
+                diffToTopicToUser[diffLevel].set(topic, userId);
                 console.log(diffToTopicToUser);
             }
         }
@@ -85,10 +88,11 @@ function updateQueue() {
 }
 
 // for client to listen to events
-router.get('/events', sse.init);
+router.get('/events',cors(), sse.init);
 
 router.get('/', (req, res) => {
     updateQueue();
+    console.log(`Get all entries`);
 
     // convert each map to JSON first
     const newHashTable = {
@@ -107,30 +111,30 @@ router.post('/', (req, res) => {
 
     if (userIdVar == null) {
         console.log('Invalid User ID');
-        res.status(400).json({'error': 'Invalid User ID'});
+        res.status(400).json({ 'error': 'Invalid User ID' });
         return;
     } else if (topicVar == null) {
         console.log('Invalid topic');
-        res.status(400).json({'error': 'Invalid topic'});
+        res.status(400).json({ 'error': 'Invalid topic' });
         return;
     } else if (diffLevelVar == null) {
         console.log('Invalid difficulty level');
-        res.status(400).json({'error': 'Invalid difficulty level'});
+        res.status(400).json({ 'error': 'Invalid difficulty level' });
         return;
     }
- 
+
     const queueElement = {
         userId: userIdVar,
         criteria: {
             topic: topicVar,
-            diffLevel: diffLevelVar 
+            diffLevel: diffLevelVar
         }
     }
 
     // enqueue user
     queue.push(queueElement);
     console.log(`User ${userIdVar} enqueued`);
-    res.json({'message': `User ${userIdVar} enqueued`});
+    res.json({ 'message': `User ${userIdVar} enqueued` });
 
     updateQueue();
 
@@ -149,7 +153,7 @@ router.post('/', (req, res) => {
 
             // delete user from userToTimeoutId hash table
             userToTimeoutId.delete(userIdVar);
-            
+
             console.log(`Match not found for ${userIdVar}!`);
             return; // go back to criteria page, with retry and quit button
         }
@@ -178,15 +182,17 @@ router.post('/', (req, res) => {
     });
 });
 
-router.delete('/', (req, res) => {
-    const userId = req.body.userId;
-    const topic = req.body.topic;
-    const diffLevel = req.body.diffLevel;
-    
+router.delete('/:userId/:topic/:diffLevel', (req, res) => {
+    const { userId, topic, diffLevel } = req.params;
+
+    if (!userId || !topic || !diffLevel) {
+        return res.status(400).json({ message: 'Missing required parameters' });
+    }
+
     if (diffToTopicToUser[diffLevel].has(topic)) {
         // get user's timeoutId
         const timeoutId = userToTimeoutId.get(userId);
-        
+
         // clear timeout
         clearTimeout(timeoutId);
 
@@ -197,10 +203,10 @@ router.delete('/', (req, res) => {
         diffToTopicToUser[diffLevel].delete(topic);
 
         console.log("User deleted successfully from queue");
-        res.json({ message: 'User deleted successfully from queue', userId });
+        res.status(200).json({ message: 'User deleted successfully from queue', userId });
     } else {
         console.log("User not found in queue");
-        res.json({ message: 'User not found in queue', userId });
+        res.status(400).json({ message: 'User not found in queue', userId });
     }
 });
 
