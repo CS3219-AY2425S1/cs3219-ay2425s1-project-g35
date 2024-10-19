@@ -1,0 +1,12 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongo-seed
+spec:
+  template:
+    spec:
+      containers:
+        - name: mongo-seed
+          image: gcr.io/peerprep-438713/mongo-seed:latest
+          command: ["/bin/sh", "-c", "/mongo-seed/import.sh"]
+      restartPolicy: OnFailure

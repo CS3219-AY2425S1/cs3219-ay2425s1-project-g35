@@ -1,0 +1,3 @@
+FROM mongo:latest
+COPY import.sh /mongo-seed/import.sh
+COPY sample_questions.csv /mongo-seed/sample_questions.csv

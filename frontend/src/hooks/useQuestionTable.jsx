@@ -3,9 +3,11 @@ import { useState, useEffect } from 'react'
 function useQuestionTable() {
     const [questions, setQuestions] = useState([]);
 
+    const VITE_QUESTION_SERVICE_API = import.meta.env.VITE_QUESTION_SERVICE_API || 'http://localhost:4000';
+
     const fetchQuestions = async () => {
         try {
-            const response = await fetch('http://localhost:4000/questions');
+            const response = await fetch(`${VITE_QUESTION_SERVICE_API}/questions`);
             console.log(response);
             if (!response.ok) {
                 const errorData = await response.json();
@@ -27,7 +29,7 @@ function useQuestionTable() {
 
     const handleDelete = async (questionId) => {
         try {
-            const response = await fetch(`http://localhost:4000/question/${questionId}`, {
+            const response = await fetch(`${VITE_QUESTION_SERVICE_API}/question/${questionId}`, {
                 method: 'DELETE',
             });
             if (!response.ok) {
@@ -48,7 +50,7 @@ function useQuestionTable() {
 
     const handleCreate = async (questionId, questionName, questionDescription, questionTopics, link, questionDifficulty) => {
         try {
-            const response = await fetch('http://localhost:4000/question', {
+            const response = await fetch(`${VITE_QUESTION_SERVICE_API}/question`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', // Indicate that the request body is JSON
@@ -79,7 +81,7 @@ function useQuestionTable() {
 
     const handleEdit = async (questionId, questionName, questionDescription, questionTopics, link, questionDifficulty) => {
         try {
-            const response = await fetch(`http://localhost:4000/question/${questionId}`, {
+            const response = await fetch(`${VITE_QUESTION_SERVICE_API}/question/${questionId}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json', // Indicate that the request body is JSON
