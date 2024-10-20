@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Queue Simulation</title>
+</head>
+<body>
+    <h1>Queue</h1>
+    <ul>
+        <% queue.forEach(element => { %>
+            <li><%= element %></li>
+        <% }); %>
+    </ul>
+    <form action="/queue/enqueue" method="post">
+        <input type="text" name="element" placeholder="Enter element">
+        <button type="submit">Enqueue</button>
+    </form>
+    <form action="/queue/dequeue" method="post">
+        <button type="submit">Dequeue</button>
+    </form>
+</body>
+</html>

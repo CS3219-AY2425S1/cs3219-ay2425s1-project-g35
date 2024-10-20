@@ -1,0 +1,141 @@
+.matchingPage {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.leftSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.matchingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    color: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.rightSection {
+    flex: 1;
+    background-color: #1f2937;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 20px;
+}
+
+.heading {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.difficultySection {
+    margin-bottom: 20px;
+    width: 100%
+}
+
+.difficultyButtons {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.difficultyButton {
+    flex: 1; 
+    padding: 10px 20px; 
+    border: 2px solid transparent;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-align: center;
+}
+
+.difficultyButton.notSelected {
+    background-color: #ceccc6;
+    color: black;
+}
+
+.difficultyButton.selectedEasy {
+    background-color: #86e49d;
+    color: #006b21;
+}
+
+.difficultyButton.selectedMedium {
+    background-color: #ebc474;
+    color: #a28017;
+}
+
+.difficultyButton.selectedHard {
+    background-color: #d893a3;
+    color: #b30021;
+}
+
+/* Topics selection section */
+.topicsSection {
+    margin-bottom: 30px;
+}
+
+.topicsContainer {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, 1fr);
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.topicButton {
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    margin: 5px;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.topicButton.topicNotSelected {
+    background-color: #ceccc6;
+    color: black;
+}
+
+.topicButton.topicSelected {
+    background-color: #a989e3;
+    border-color: #7440cf;
+}
+
+.findMatchButton {
+    padding: 15px 30px;
+    margin-bottom: 20px;
+    width: 100%;
+    background-color: #2864ec;
+    color: white;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.findMatchButton:hover {
+    background-color: #204cdc;
+}
+
+.findMatchButtonDisabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}

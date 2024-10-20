@@ -1,0 +1,33 @@
+nav {
+    display: flex;
+    background-color: white;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 25px;
+    padding: 15px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+
+.navContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+}
+
+.navBrand {
+    font-size: 2rem; 
+    font-weight: bold;
+    color: #253df1f0;
+}
+
+.navButton {
+    background-color: white;
+    color: black;
+    margin-top: 10px;
+    margin-right: 10px;
+    border-radius: 10px;
+    padding: 10px 15px;
+}

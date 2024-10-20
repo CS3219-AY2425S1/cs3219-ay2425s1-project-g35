@@ -1,0 +1,93 @@
+.registerContainer {
+    display: flex;
+    flex-direction: row;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+}
+
+.leftSection {
+    flex: 1.25;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 50px;
+}
+
+.appTitle {
+    font-size: 4rem;
+    font-weight: bold;
+    color: #a9f1ff;
+}
+
+.appSubtitle {
+    font-size: 1.2rem;
+    margin-top: 20px;
+    color: #c4c4c4;
+}
+
+.rightSection {
+    flex: 1;
+    flex-direction: column;
+    background-color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 50px;
+    border-radius: 20px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.registerForm {
+    width: 100%;
+    max-width: 400px;  /* Increase the form's maximum width */
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  /* Optional shadow for emphasis */
+    background-color: white;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.registerForm .formGroup {
+    margin-bottom: 15px;
+}
+
+.registerForm label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.registerForm input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.registerForm .registerButton {
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.registerForm .registerButton:hover {
+    background-color: #0056b3;
+}
+
+.errorMessage {
+    color: red;
+    text-align: center;
+    margin-bottom: 10px;
+}
