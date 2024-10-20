@@ -62,34 +62,6 @@ const useMatcher = (userId) => {
         }
     };
 
-    // // Listen to Server-Sent Events (SSE)
-    // const listenToSSE = () => {
-    //     const eventSource = new EventSource(`${API_BASE_URL}/events`); 
-    
-    //     eventSource.addEventListener('matchFound', (event) => {
-    //         const data = JSON.parse(event.data); // Parse the event data
-    //         console.log('Match found:', data);
-    //         setStatusMessage('You have been matched with ___ <update this>');
-    //         setIsMatchSuccessful(true)
-    //     });
-    
-    //     eventSource.addEventListener('matchNotFound', (event) => {
-    //         const data = JSON.parse(event.data);
-    //         console.log('Match not found for:', data.user);
-    //         setStatusMessage('No match found, please try again.');
-    //         setIsMatchSuccessful(false)
-    //     });
-    
-    //     eventSource.onerror = (error) => {
-    //         console.error('SSE error:', error);
-    //     };
-    // };
-
-    // useEffect(() => {
-    //     fetchMatchingData();
-    //     listenToSSE();
-    // }, []);
-
     return {
         isMatchSuccessful,
         timerStart,
