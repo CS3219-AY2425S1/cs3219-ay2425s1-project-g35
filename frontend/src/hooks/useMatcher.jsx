@@ -19,6 +19,7 @@ const useMatcher = (userId) => {
     // Enqueue a new user for matching
     const enqueueUser = async (topic, diffLevel) => {
         try {
+            setTimerStart(true);
             const response = await fetch(`${API_BASE_URL}/`, {
                 method: 'POST',
                 headers: {
@@ -31,12 +32,15 @@ const useMatcher = (userId) => {
                 }),
             });
             const data = await response.json();
+            setTimerStart(false);
             console.log('Enqueue Response:', data);
-            setTimerStart(true);
-            listenToSSE();
+            alert(`Queueing result: ${data.message}`);
+                        //listenToSSE();
         } catch (error) {
             console.error('Error enqueuing user:', error);
+            return false;
         }
+        return true;
     };
 
     // Delete a user from queue if the user cancels matching
@@ -58,28 +62,28 @@ const useMatcher = (userId) => {
         }
     };
 
-    // Listen to Server-Sent Events (SSE)
-    const listenToSSE = () => {
-        const eventSource = new EventSource(`${API_BASE_URL}/events`); 
+    // // Listen to Server-Sent Events (SSE)
+    // const listenToSSE = () => {
+    //     const eventSource = new EventSource(`${API_BASE_URL}/events`); 
     
-        eventSource.addEventListener('matchFound', (event) => {
-            const data = JSON.parse(event.data); // Parse the event data
-            console.log('Match found:', data);
-            setStatusMessage('You have been matched with ___ <update this>');
-            setIsMatchSuccessful(true)
-        });
+    //     eventSource.addEventListener('matchFound', (event) => {
+    //         const data = JSON.parse(event.data); // Parse the event data
+    //         console.log('Match found:', data);
+    //         setStatusMessage('You have been matched with ___ <update this>');
+    //         setIsMatchSuccessful(true)
+    //     });
     
-        eventSource.addEventListener('matchNotFound', (event) => {
-            const data = JSON.parse(event.data);
-            console.log('Match not found for:', data.user);
-            setStatusMessage('No match found, please try again.');
-            setIsMatchSuccessful(false)
-        });
+    //     eventSource.addEventListener('matchNotFound', (event) => {
+    //         const data = JSON.parse(event.data);
+    //         console.log('Match not found for:', data.user);
+    //         setStatusMessage('No match found, please try again.');
+    //         setIsMatchSuccessful(false)
+    //     });
     
-        eventSource.onerror = (error) => {
-            console.error('SSE error:', error);
-        };
-    };
+    //     eventSource.onerror = (error) => {
+    //         console.error('SSE error:', error);
+    //     };
+    // };
 
     // useEffect(() => {
     //     fetchMatchingData();

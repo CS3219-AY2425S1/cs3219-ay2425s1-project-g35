@@ -162,8 +162,10 @@ router.post('/', (req, res) => {
             userToIntervalId.delete(userIdVar);
 
             console.log(`Match found between ${userIdVar} and ${partner}!`);
-            res.json({'message': `${userIdVar}, your partner is ${partner}!`});
-        }
+            res.json({
+                message: `${userIdVar}, your partner is ${partner}!`,
+                matchFound: true
+            });        }
     }, 3000);
 
     const timeoutId = setTimeout(() => {
@@ -181,7 +183,11 @@ router.post('/', (req, res) => {
             userToTimeoutId.delete(userIdVar);
 
             console.log(`Match not found for ${userIdVar}!`);
-            res.json({'message': `Sorry ${userIdVar}, we couldn't find you a match!`});
+            //res.json({'message': `Sorry ${userIdVar}, we couldn't find you a match!`});
+            res.json({
+                message: `Sorry ${userIdVar}, we couldn't find you a match!`,
+                matchFound: false
+            });
             return; // go back to criteria page, with retry and quit button
         }
     }, waitingTime);

@@ -43,13 +43,15 @@ const MatchingPage = () => {
         setSelectedTopic(topic);
     };
 
-    const handleFindMatch = () => {
+    const handleFindMatch = async () => {
         if (!selectedDifficulty || !selectedTopic) {
             alert("Please select a difficulty and at least one topic.");
             return;
         } else {
-            setSelectedFindingMatch(!selectedFindingMatch);
-            enqueueUser(selectedTopic, selectedDifficulty);
+            setSelectedFindingMatch(true);
+            const res = await enqueueUser(selectedTopic, selectedDifficulty);
+            setSelectedFindingMatch(false);
+            
         }
 
         console.log("Finding match with:", selectedDifficulty, selectedTopic);
@@ -65,6 +67,7 @@ const MatchingPage = () => {
 
     useEffect(() => {
         console.log(`isMatchSuccessful: ${isMatchSuccessful}`);
+        setSelectedFindingMatch(false);
         if (isMatchSuccessful === true) {
             setStatusMessage("Match found! Get ready!");
         } else if (isMatchSuccessful === false) {
