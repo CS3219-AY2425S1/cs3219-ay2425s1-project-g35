@@ -35,7 +35,11 @@ const diffToTopicToUser = {
 }
 
 // hash table of users to timers
+const userToIntervalId = new Map();
 const userToTimeoutId = new Map();
+
+// hash table of users to partners
+const userToPartner = new Map();
 
 // queue to streamline order in which requests are processed
 const queue = [];
@@ -52,9 +56,12 @@ function updateQueue() {
             // get other user
             const userId2 = diffToTopicToUser[diffLevel].get(topic);
 
-            // send event signifying match found
-            console.log(`Emitting matchFound event for ${userId} and ${userId2}...`);
-            sse.emit('matchFound', { user1: userId, user2: userId2 });
+            // delete waiting user from hash table
+            diffToTopicToUser[diffLevel].delete(topic);
+
+            // place matched users in hash table
+            userToPartner.set(userId, userId2);
+            userToPartner.set(userId2, userId);
         } else {
             // get other diffLevels in stated order
             const altDiffLevels = altDiffLevelOrders[diffLevel];
@@ -70,9 +77,12 @@ function updateQueue() {
                     // get other user
                     const userId2 = diffToTopicToUser[altDiffLevel].get(topic);
 
-                    // send event signifying match found
-                    console.log(`Emitting matchFound event for ${userId} and ${userId2}...`);
-                    sse.emit('matchFound', { user1: userId, user2: userId2 });
+                    // delete waiting user from hash table
+                    diffToTopicToUser[altDiffLevel].delete(topic);
+
+                    // place matched users in hash table
+                    userToPartner.set(userId, userId2);
+                    userToPartner.set(userId2, userId);
 
                     break;
                 }
@@ -86,9 +96,6 @@ function updateQueue() {
         }
     }
 }
-
-// for client to listen to events
-router.get('/events',cors(), sse.init);
 
 router.get('/', (req, res) => {
     updateQueue();
@@ -134,52 +141,54 @@ router.post('/', (req, res) => {
     // enqueue user
     queue.push(queueElement);
     console.log(`User ${userIdVar} enqueued`);
-    res.json({ 'message': `User ${userIdVar} enqueued` });
 
     updateQueue();
+
+    const intervalId = setInterval(() => {
+        console.log(`Checking every 3 seconds for ${userIdVar}...`);
+      
+        // check if user is already matched
+        if (userToPartner.has(userIdVar)) {
+            // get partner
+            const partner = userToPartner.get(userIdVar);
+
+            // remove user from hash table
+            userToPartner.delete(userIdVar);
+
+            // Stop the interval
+            clearInterval(intervalId);
+
+            // delete timer from hash table
+            userToIntervalId.delete(userIdVar);
+
+            console.log(`Match found between ${userIdVar} and ${partner}!`);
+            res.json({'message': `${userIdVar}, your partner is ${partner}!`});
+        }
+    }, 3000);
 
     const timeoutId = setTimeout(() => {
         // Check if user is in the map
         if (diffToTopicToUser[diffLevelVar].has(topicVar) && diffToTopicToUser[diffLevelVar].get(topicVar) == userIdVar) {
-            // send event signifying match found
-            console.log(`Emitting matchNotFound event for ${userIdVar}...`);
-            sse.emit('matchNotFound', { user: userIdVar });
-
             // delete user from diffToTopicToUser hash table
             diffToTopicToUser[diffLevelVar].delete(topicVar);
 
-            // clear timer
+            // clear timers
             clearTimeout(timeoutId);
+            clearInterval(intervalId);
 
-            // delete user from userToTimeoutId hash table
+            // delete user from timer hash tables
+            userToIntervalId.delete(userIdVar);
             userToTimeoutId.delete(userIdVar);
 
             console.log(`Match not found for ${userIdVar}!`);
+            res.json({'message': `Sorry ${userIdVar}, we couldn't find you a match!`});
             return; // go back to criteria page, with retry and quit button
         }
     }, waitingTime);
 
-    // put timeoutId in hash table
-    userToTimeoutId.set(userIdVar, timeoutId);
-
-    sse.on('matchFound', (data) => {
-        // Check if the event relates to the current user
-        const userId1 = data.user1;
-        const userId2 = data.user2;
-        if (userId1 == userIdVar || userId2 == userIdVar) {
-            // clear timer
-            clearTimeout(timeoutId);
-
-            // delete timer
-            userToTimeoutId.delete(userIdVar);
-
-            // delete other user from main hash table
-            diffToTopicToUser[diffLevelVar].delete(topicVar);
-
-            console.log(`Match found between ${userId1} and ${userId2}!`);
-            return;
-        }
-    });
+    // put time-related IDs in hash tables
+    userToIntervalId.set(userIdVar, intervalId);
+    userToTimeoutId.set(userIdVar, timeoutId); 
 });
 
 router.delete('/:userId/:topic/:diffLevel', (req, res) => {
@@ -191,12 +200,15 @@ router.delete('/:userId/:topic/:diffLevel', (req, res) => {
 
     if (diffToTopicToUser[diffLevel].has(topic)) {
         // get user's timeoutId
+        const intervalId = userToIntervalId.get(userId);
         const timeoutId = userToTimeoutId.get(userId);
-
-        // clear timeout
+        
+        // clear timers
+        clearInterval(intervalId);
         clearTimeout(timeoutId);
 
         // delete user from userToTimeoutId hash table
+        userToIntervalId.delete(userId);
         userToTimeoutId.delete(userId);
 
         // delete user from diffToTopicToUser hash table
