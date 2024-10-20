@@ -68,6 +68,15 @@ services:
     networks:
       - app-network
 
+  # MatchingService
+  matching-service:
+    build: ./MatchingService
+    container_name: MatchingService
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
   # Frontend
   frontend:
     build: ./frontend
