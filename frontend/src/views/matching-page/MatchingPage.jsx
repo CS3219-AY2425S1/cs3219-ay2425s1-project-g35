@@ -50,7 +50,6 @@ const MatchingPage = () => {
         } else {
             setSelectedFindingMatch(true);
             const res = await enqueueUser(selectedTopic, selectedDifficulty);
-            setSelectedFindingMatch(false);
             localStorage.setItem('timerStarted', 'true');
         }
 
@@ -62,7 +61,6 @@ const MatchingPage = () => {
         deleteUserFromQueue();
         setSelectedFindingMatch(false);
         localStorage.removeItem('timerStarted');
-        localStorage.setItem('requestCanceled', 'true');
     };
 
     const handleTimeout = () => {
@@ -74,6 +72,7 @@ const MatchingPage = () => {
     useEffect(() => {
         console.log(`isMatchSuccessful: ${isMatchSuccessful}`);
         setSelectedFindingMatch(false);
+        localStorage.setItem('timerStarted', 'false');
         if (isMatchSuccessful === true) {
             setStatusMessage("Match found! Get ready!");
         } else if (isMatchSuccessful === false) {
@@ -104,7 +103,7 @@ const MatchingPage = () => {
     useEffect(() => {
         const timerStarted = localStorage.getItem('timerStarted');
         const requestCanceled = localStorage.getItem('requestCanceled');
-
+        
         if (requestCanceled === 'true') {
             alert("Your previous match request was cancelled due to a page refresh. Please try again");
             localStorage.removeItem('requestCanceled');

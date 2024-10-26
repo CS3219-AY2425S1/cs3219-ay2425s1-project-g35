@@ -39,20 +39,34 @@ async function processMatchQueue(io) {
 
             // Find lowest common difficulty 
             const difficultyLevels = ['Easy', 'Medium', 'Hard'];
-            const user1difficultyIndex = difficultyLevels.indexOf(difficulty);
-            const user2difficultyIndex = difficultyLevels.indexOf(difficulty);
+
+            const curUserDifficultyIndex = difficultyLevels.indexOf(difficulty);   
+            const matchUserDifficultyIndex = difficultyLevels.indexOf(match.difficulty);
 
             let lowestCommonDifficulty = difficultyLevels[0];
             for (let i = 0; i < difficultyLevels.length; i++) {
-                if (user1difficultyIndex === i || user2difficultyIndex === i) {
+                if (curUserDifficultyIndex === i || matchUserDifficultyIndex === i) {
                     lowestCommonDifficulty = difficultyLevels[i];
                     break;
                 }
             }
 
-            // emit matched event to both users
-            io.to(socketId).emit('matched', { partnerId: match.userId }, topic, lowestCommonDifficulty );
-            io.to(match.socketId).emit('matched', { partnerId: userId }, topic, lowestCommonDifficulty );
+            // TODO: emit more verbose event
+            const matchData = {
+                id: match.userId,
+                topic: match.topic,
+                difficulty: match.difficulty,
+            }
+
+            const curData = {
+                id: userId,
+                topic: topic,
+                difficulty: difficulty,
+            }
+            
+            // sent to current user socket
+            io.to(socketId).emit('matched', matchData, curData);
+            io.to(match.socketId).emit('matched', curData, matchData);
 
             console.log(`Matched ${userId} with ${match.userId}`);
             console.log("Redis Queue (matched) : ", queue);

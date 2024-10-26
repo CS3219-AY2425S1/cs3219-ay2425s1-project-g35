@@ -17,11 +17,21 @@ const useMatcher = (userId) => {
         });
 
         // Handle match found event
-        socketInstance.on('matched', (data) => {
-            console.log('Match found:', data);
+
+        socketInstance.on('matched', (matchData, curData) => {
+            console.log('Match found:', matchData, curData);
             setIsMatchSuccessful(true);
             setTimerStart(false);
-            alert(`Matched with user: ${data.partnerId}`);
+            alert(
+                `Matched with userID: ${matchData.id}
+                partner topic: ${matchData.topic}
+                partner difficulty: ${matchData.difficulty}
+                
+                your userID: ${curData.id}
+                your topic: ${curData.topic}
+                your difficulty: ${curData.difficulty}
+                `
+            );
         });
 
         // Cleanup on unmount
