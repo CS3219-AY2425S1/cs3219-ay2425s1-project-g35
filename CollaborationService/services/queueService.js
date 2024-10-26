@@ -8,7 +8,7 @@ async function getChannel() {
     return channel;
 }
 
-async function consumeMatchFound(processMessage) {
+async function consumeMatchFound(processMessage, io) {
     try {
         const channel = await getChannel();
         await channel.assertQueue(MATCH_FOUND_QUEUE, { durable: false });
@@ -19,7 +19,7 @@ async function consumeMatchFound(processMessage) {
                 console.log(`Consumed message from ${MATCH_FOUND_QUEUE}`, message);
 
                 try {
-                    await processMessage(message);
+                    processMessage(message, io);
                     channel.ack(msg);
                 } catch (error) {
                     console.log(error);

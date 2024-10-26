@@ -21,7 +21,17 @@ function getRoom(roomId) {
     return rooms[roomId];
 }
 
+function updateContent(roomId, content) {
+    rooms[roomId].updateContent(content);
+}
+
+function updateCursorPosition(roomId, userId, cursorPosition) {
+    rooms[roomId].updateCursorPosition(userId, cursorPosition);
+}
+
 export default {
     createRoom,
-    getRoom
+    getRoom,
+    updateContent,
+    updateCursorPosition
 }
