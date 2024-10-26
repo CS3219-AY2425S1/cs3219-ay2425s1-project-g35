@@ -1,19 +1,18 @@
 // server.js
-const express = require('express');
-const http = require('http');
-const socketIo = require('socket.io');
-const { connectToDatabase } = require('./db');
-const documentRoutes = require('./routes/documentRoutes');
+import express from 'express';
+import http from 'http';
+import { Server as SocketIoServer } from 'socket.io';
+import { connectToDatabase } from './db.js';
+import documentRoutes from './routes/documentRoutes.js';
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = new SocketIoServer(server);
 
 app.use(express.json());
 app.use('/routes', documentRoutes);
 
-
-// todo: update logic for real time collaboration
+// todo: update logic for real-time collaboration
 io.on('connection', (socket) => {
     console.log('User connected');
 
@@ -34,7 +33,7 @@ io.on('connection', (socket) => {
 
 const startServer = async () => {
     await connectToDatabase();
-    const PORT = process.env.PORT || 3000;
+    const PORT = process.env.PORT || 3001;
     server.listen(PORT, () => {
         console.log(`Server is running on port ${PORT}`);
     });
