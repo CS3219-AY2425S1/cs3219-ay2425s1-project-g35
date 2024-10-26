@@ -32,6 +32,9 @@ const useMatcher = (userId) => {
                 your difficulty: ${curData.difficulty}
                 `
             );
+
+            // Redirect to the coding page
+            // navigate("/", { replace: true} );
         });
 
         // Cleanup on unmount
