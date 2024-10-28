@@ -61,12 +61,15 @@ async function processMatchQueue(io) {
             io.to(socketId).emit('matched', matchData, curData);
             io.to(match.socketId).emit('matched', curData, matchData);
 
+            const roomId = generateRoomId(userId, match.userId);
+
             // Create and publish matchfound event
             const matchFoundEvent = {
                 user1_Id: userId,
                 user2_id: match.userId,
                 topic: topic,
-                difficulty: lowestCommonDifficulty
+                difficulty: lowestCommonDifficulty,
+                roomId: roomId
             }
 
             try {
@@ -107,6 +110,10 @@ function findMatch(queue, userId, topic, difficulty) {
     }
 
     return null;
+}
+
+function generateRoomId(user1_id, user2_id) {
+    return user1_id + user2_id;
 }
 
 export default {
