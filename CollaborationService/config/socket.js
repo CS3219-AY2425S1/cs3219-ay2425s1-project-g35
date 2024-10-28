@@ -15,6 +15,12 @@ function createSocket(io) {
             if (room) {
                 socket.join(roomId);
                 console.log(`User ${socket.id} joined room: ${roomId}`);
+
+                socket.emit('load_room_content', { 
+                    question: room.question,
+                    documentContent: room.documentContent,
+                    cursors: room.cursors
+                });
             } else {
                 console.error(`Room ${roomId} not found for user ${socket.id}`);
                 socket.emit('error', { message: 'Room not found' });
