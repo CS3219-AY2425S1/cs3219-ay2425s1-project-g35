@@ -62,7 +62,7 @@ async function processMatchQueue(io) {
             try {
                 await publishMatchFound(matchFoundEvent);
                 console.log(`Matched ${userId} with ${match.userId}`);
-                console.log("Redis Queue (after matching):", updatedQueue);
+                console.log("Redis Queue (after matching):");
             } catch (error) {
                 console.error("Error publishing match found event:", error);
             }

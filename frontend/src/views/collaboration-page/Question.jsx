@@ -3,7 +3,7 @@ const Question = ({ name, description, topics, leetcode_link, difficulty}) => {
     return (
         <div>
             <h2>{name}</h2>
-            <ul style={styles.topicList}>
+            <ul >
                     {topics.map((topic, index) => (
                         <li key={index}>{topic}</li>
                     ))}
@@ -13,3 +13,5 @@ const Question = ({ name, description, topics, leetcode_link, difficulty}) => {
         </div>
     )
 }
+
+export default Question;

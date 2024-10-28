@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
+import { useNavigate } from 'react-router-dom';
 
 const useMatcher = (userId) => {
     const [isMatchSuccessful, setIsMatchSuccessful] = useState(null);
     const [timerStart, setTimerStart] = useState(false);
     const [socket, setSocket] = useState(null);
     const API_BASE_URL = 'http://localhost:3000/matcher';
+    const navigate = useNavigate();
+    
 
     // Establish socket connection on component mount
     useEffect(() => {
@@ -18,23 +21,14 @@ const useMatcher = (userId) => {
 
         // Handle match found event
 
-        socketInstance.on('matched', (matchData, curData) => {
-            console.log('Match found:', matchData, curData);
+        socketInstance.on('matched', (matchFoundEvent) => {
+            console.log('Match found:', matchFoundEvent);
             setIsMatchSuccessful(true);
             setTimerStart(false);
-            alert(
-                `Matched with userID: ${matchData.id}
-                partner topic: ${matchData.topic}
-                partner difficulty: ${matchData.difficulty}
-                
-                your userID: ${curData.id}
-                your topic: ${curData.topic}
-                your difficulty: ${curData.difficulty}
-                `
-            );
-
-            // Redirect to the coding page
-            // navigate("/", { replace: true} );
+            const roomId = matchFoundEvent.roomId;
+            
+            
+            navigate(`/collab/${roomId}`, { replace: true} );
         });
 
         // Cleanup on unmount

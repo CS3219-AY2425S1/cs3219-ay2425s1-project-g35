@@ -7,6 +7,7 @@ import RegisterPage from './views/register-page/RegisterPage';
 import MatchingPage from './views/matching-page/MatchingPage';
 
 import styles from './App.module.css';
+import CollaborationPage from './views/collaboration-page/CollaborationPage';
 
 function App() {
   return (
@@ -17,7 +18,8 @@ function App() {
             <Route path="/" element={<MainPage />}>
               {/* <Route index element={<QuestionTable />} />  */}
               <Route path='/' element={<MatchingPage /> } />
-            </Route>
+              <Route path="/collab/:roomId" element={<CollaborationPage/>} />
+              </Route>
           </Route>
 
           <Route path="/login" element={<LoginPage />} />
