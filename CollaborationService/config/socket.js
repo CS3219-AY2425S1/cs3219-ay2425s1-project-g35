@@ -1,9 +1,15 @@
 import roomService from '../services/roomService.js';
+import clientInstance from '../models/client-model.js';
 const { getRoom, updateCursorPosition, updateContent } = roomService;
 
 function createSocket(io) {
     io.on('connection', (socket) => {
         console.log('User connected:', socket.id);
+        const userId = socket.handshake.query.userId;
+
+        clientInstance.addClient(userId, socket.id);
+
+        console.log(`User connected: ${userId}, socket ID: ${socket.id}`);
 
         socket.on('joinRoom', ({ roomId }) => {
             console.log(`User ${socket.id} attempting to join room: ${roomId}`);
