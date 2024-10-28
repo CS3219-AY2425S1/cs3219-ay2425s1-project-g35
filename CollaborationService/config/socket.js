@@ -53,6 +53,15 @@ function createSocket(io) {
 
         socket.on('disconnect', () => {
             console.log('User disconnected:', socket.id);
+
+            const userId = clientInstance.getUserIdBySocketId(socket.id);
+            
+            if (userId) {
+                clientInstance.removeClient(userId);
+                console.log(`Removed client with userId: ${userId} after disconnect.`);
+            } else {
+                console.error(`Could not find userId for disconnected socket: ${socket.id}`);
+            }
         });
     });
 }

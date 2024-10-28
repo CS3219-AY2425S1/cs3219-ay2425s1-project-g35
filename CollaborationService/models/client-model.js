@@ -15,6 +15,15 @@ class Client {
         return this.clients.get(userId);
     }
 
+    getUserIdBySocketId(socketId) {
+        for (const [userId, id] of this.clients.entries()) {
+            if (id === socketId) {
+                return userId;
+            }
+        }
+        return null;
+    }
+
     getAllClients() {
         return Array.from(this.clients.entries());
     }
