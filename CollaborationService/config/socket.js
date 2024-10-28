@@ -9,6 +9,19 @@ function createSocket(io) {
 
         clientInstance.addClient(userId, socket.id);
 
+        const question = {
+            "Question ID": 101,
+            "Question Title": "Two Sum",
+            "Question Description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
+            "Question Categories": ["Array", "Hash Table"],
+            "Link": "https://leetcode.com/problems/two-sum/",
+            "Question Complexity": "Easy"
+        }
+
+        io.to(socket.id).emit('collaboration_ready', {
+            question: question
+        });
+
         console.log(`User connected: ${userId}, socket ID: ${socket.id}`);
 
         socket.on('joinRoom', ({ roomId }) => {
@@ -17,8 +30,6 @@ function createSocket(io) {
             if (room) {
                 socket.join(roomId);
                 console.log(`User ${socket.id} joined room: ${roomId}`);
-                socket.emit('collaboration_ready', { roomId, question: room.question, documentContent: room.documentContent, cursors: room.cursors });
-                console.log(`Sent collaboration_ready event to user ${socket.id} with room data.`);
             } else {
                 console.error(`Room ${roomId} not found for user ${socket.id}`);
                 socket.emit('error', { message: 'Room not found' });
