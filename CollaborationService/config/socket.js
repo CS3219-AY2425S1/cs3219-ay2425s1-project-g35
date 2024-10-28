@@ -9,21 +9,6 @@ function createSocket(io) {
 
         clientInstance.addClient(userId, socket.id);
 
-        const question = {
-            "Question ID": 101,
-            "Question Title": "Two Sum",
-            "Question Description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
-            "Question Categories": ["Array", "Hash Table"],
-            "Link": "https://leetcode.com/problems/two-sum/",
-            "Question Complexity": "Easy"
-        }
-
-        io.to(socket.id).emit('collaboration_ready', {
-            question: question
-        });
-
-        console.log(`User connected: ${userId}, socket ID: ${socket.id}`);
-
         socket.on('joinRoom', ({ roomId }) => {
             console.log(`User ${socket.id} attempting to join room: ${roomId}`);
             const room = getRoom(roomId);
