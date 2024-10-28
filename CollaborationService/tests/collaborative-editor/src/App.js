@@ -2,14 +2,15 @@
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 
-const socket = io('http://localhost:3002'); // Update with your backend server address if different
+//const socket = io('http://localhost:3002'); // Update with your backend server address if different
 
 function App() {
     const [content, setContent] = useState('');
     const [roomId, setRoomId] = useState('room1'); // Sample room ID
     const [cursors, setCursors] = useState({});
-
+   
     useEffect(() => {
+        const socket = io('http://localhost:3002'); 
         console.log('Connecting to the server and joining room:', roomId);
 
         // Join a room
@@ -45,6 +46,7 @@ function App() {
     }, [roomId]);
 
     const handleEdit = (e) => {
+        const socket = io('http://localhost:3002'); 
         const newContent = e.target.value;
         console.log('User editing document. New content:', newContent);
         setContent(newContent);
@@ -53,6 +55,7 @@ function App() {
     };
 
     const handleCursorPosition = (position) => {
+        const socket = io('http://localhost:3002'); 
         const userId = 'user1'; // Replace with dynamically generated user ID
         console.log('User cursor moved. Position:', position);
         socket.emit('updateCursor', { roomId, userId, cursorPosition: position });
