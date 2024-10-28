@@ -44,23 +44,7 @@ async function processMatchQueue(io) {
             const matchUserDifficultyIndex = difficultyLevels.indexOf(match.difficulty);
 
             const lowestCommonDifficulty = difficultyLevels[Math.min(curUserDifficultyIndex, matchUserDifficultyIndex)];
-
-            // Create and emit socket event to users
-            const matchData = {
-                id: match.userId,
-                topic: match.topic,
-                difficulty: match.difficulty,
-            }
-
-            const curData = {
-                id: userId,
-                topic: topic,
-                difficulty: difficulty,
-            }
             
-            io.to(socketId).emit('matched', matchData, curData);
-            io.to(match.socketId).emit('matched', curData, matchData);
-
             const roomId = generateRoomId(userId, match.userId);
 
             // Create and publish matchfound event
@@ -71,6 +55,9 @@ async function processMatchQueue(io) {
                 difficulty: lowestCommonDifficulty,
                 roomId: roomId
             }
+
+            io.to(socketId).emit('matched', matchFoundEvent);
+            io.to(match.socketId).emit('matched', matchFoundEvent);
 
             try {
                 await publishMatchFound(matchFoundEvent);
