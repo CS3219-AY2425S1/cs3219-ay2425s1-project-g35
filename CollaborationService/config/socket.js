@@ -51,7 +51,7 @@ function createSocket(io) {
             }
         });
 
-        socket.on('custom_disconnect', ({ roomId }) => {
+        socket.on('custom_disconnect', ({ roomId, username }) => {
             console.log('User disconnected:', socket.id);
 
             const userId = clientInstance.getUserIdBySocketId(socket.id);
@@ -63,7 +63,7 @@ function createSocket(io) {
                 console.error(`Could not find userId for disconnected socket: ${socket.id}`);
             }
 
-            socket.to(roomId).emit('partner_disconnect', { userId });
+            socket.to(roomId).emit('partner_disconnect', { username });
         });
     });
 }
