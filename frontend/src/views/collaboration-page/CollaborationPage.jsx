@@ -6,6 +6,7 @@ import Question from '../../components/Question';
 
 import styles from './CollaborationPage.module.css';
 
+
 const CollaborationPage = () => {
     const [cookies, setCookie] = useCookies(["accessToken", "userId"]);
     const { roomId } = useParams(); 
@@ -19,8 +20,6 @@ const CollaborationPage = () => {
 
     // Create a ref for the socket instance
     const socketRef = useRef(null);
-
-    const isJoinedRef = useRef(false);
 
     useEffect(() => {
         const userId = cookies.userId;
@@ -43,10 +42,8 @@ const CollaborationPage = () => {
             setQuestion(data.question);
             console.log('Joined room', roomId);
             socketRef.current.emit('joinRoom', { roomId });
-            //setIsJoined(true);
             // Update loading state
             setIsLoading(false);
-            //isJoinedRef.current = true; 
             localStorage.setItem(`joined-${roomId}`, 'true');
         });
 
@@ -77,8 +74,8 @@ const CollaborationPage = () => {
         });
 
         socketRef.current.on('partner_disconnect', (data) => {
-            console.log('Reeceived partner_disconnect event from user:', data.userId);
-            alert(`Received partner_disconnect event from user: ${data.userId}`);
+            console.log('Received partner_disconnect event from user:', data.username);
+            alert(`Received partner_disconnect event from user: ${data.username}`);
         });
         // return () => {
         //     console.log('Disconnecting socket');
@@ -104,9 +101,10 @@ const CollaborationPage = () => {
     };
 
     const handleLeave = () => {
-        socketRef.current.emit('custom_disconnect', { roomId });
+        const username = cookies.username;
+        socketRef.current.emit('custom_disconnect', { roomId, username });
         console.log('Emitted leaveRoom event with roomId:', roomId);
-        navigate('/', { replace: true} );
+        navigate('/', { replace: true } );
         socketRef.current.disconnect();
 
     }

@@ -30,6 +30,7 @@ const useLogin = () => {
             console.log(`successfully login ${email}`);
             setCookie( "accessToken", data["data"]["accessToken"], { path: '/' } );
             setCookie( "userId", data["data"]["id"], { path: '/' } );
+            setCookie( "username", data["data"]["username"], { path: '/' } );
             navigate("/", { replace: true} );
         } catch (error) {
             setIsInvalidLogin(true);
