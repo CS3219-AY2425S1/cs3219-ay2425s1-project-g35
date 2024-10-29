@@ -51,11 +51,11 @@ function createSocket(io) {
             }
         });
 
-        socket.on('disconnect', () => {
+        socket.on('custom_disconnect', ({ roomId }) => {
             console.log('User disconnected:', socket.id);
 
             const userId = clientInstance.getUserIdBySocketId(socket.id);
-            
+
             if (userId) {
                 clientInstance.removeClient(userId);
                 console.log(`Removed client with userId: ${userId} after disconnect.`);
@@ -63,7 +63,7 @@ function createSocket(io) {
                 console.error(`Could not find userId for disconnected socket: ${socket.id}`);
             }
 
-            socket.to(roomId).emit('partner_disconnect', userId);
+            socket.to(roomId).emit('partner_disconnect', { userId });
         });
     });
 }

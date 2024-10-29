@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate, replace } from 'react-router-dom';
 import { useCookies } from "react-cookie";
-import Question from './Question'
+import Question from '../../components/Question';
+
+import styles from './CollaborationPage.module.css';
 
 const CollaborationPage = () => {
     const [cookies, setCookie] = useCookies(["accessToken", "userId"]);
@@ -11,9 +13,14 @@ const CollaborationPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [content, setContent] = useState('');
     const [cursors, setCursors] = useState({});
+    const [isJoined, setIsJoined] = useState(false);
+
+    const navigate = useNavigate();
 
     // Create a ref for the socket instance
     const socketRef = useRef(null);
+
+    const isJoinedRef = useRef(false);
 
     useEffect(() => {
         const userId = cookies.userId;
@@ -23,15 +30,38 @@ const CollaborationPage = () => {
         });
         console.log('Connecting to the collaboration service server socket');
 
+        const joinedState = localStorage.getItem(`joined-${roomId}`) === 'true';
+
+        if (joinedState) {
+            socketRef.current.emit('joinRoom', { roomId });
+            console.log('joinign room', roomId);
+            localStorage.setItem(`joined-${roomId}`, 'true');
+        }
+        
         socketRef.current.on('collaboration_ready', (data) => {
             console.log('Received collaboration_ready event with data:', data);
             setQuestion(data.question);
-            socketRef.current.emit('joinRoom', { roomId });
             console.log('Joined room', roomId);
+            socketRef.current.emit('joinRoom', { roomId });
+            //setIsJoined(true);
+            // Update loading state
+            setIsLoading(false);
+            //isJoinedRef.current = true; 
+            localStorage.setItem(`joined-${roomId}`, 'true');
+        });
+
+
+
+        socketRef.current.on('load_room_content', (data) => {
+            console.log(`Received load_room_content event with data: ${data}`);
+            setQuestion(data.question);
+            setContent(data.documentContent);
+            setCursors(data.cursors);
+            // Update loading state
+            setIsLoading(false);
         });
         
-        // Update loading state
-        setIsLoading(false);
+        
 
         socketRef.current.on('documentUpdate', (data) => {
             console.log('Received documentUpdate event with content:', data.content);
@@ -46,6 +76,10 @@ const CollaborationPage = () => {
             }));
         });
 
+        socketRef.current.on('partner_disconnect', (data) => {
+            console.log('Reeceived partner_disconnect event from user:', data.userId);
+            alert(`Received partner_disconnect event from user: ${data.userId}`);
+        });
         // return () => {
         //     console.log('Disconnecting socket');
         //     socketRef.current.disconnect();
@@ -69,24 +103,21 @@ const CollaborationPage = () => {
         console.log('Emitted updateCursor event with roomId:', roomId, 'userId:', userId, 'and cursor position:', position);
     };
 
+    const handleLeave = () => {
+        socketRef.current.emit('custom_disconnect', { roomId });
+        console.log('Emitted leaveRoom event with roomId:', roomId);
+        navigate('/', { replace: true} );
+        socketRef.current.disconnect();
+
+    }
+
     return (
-        <div>
+        <div className={styles.CollaborationContainer}>
             {isLoading ? (
                 <p>Loading...</p>
             ) : (
                 <>
-                    <h1>Collaboration Room: {roomId}</h1>
-                    {question ? (
-                        <Question
-                            name={question["Question Title"]}
-                            description={question["Question Description"]}
-                            topics={question["Question Categories"]}
-                            leetcode_link={question["Link"]}
-                            difficulty={question["Question Complexity"]}
-                        />
-                    ) : (
-                        <p>Waiting for question...</p>
-                    )}
+                    
                     <div>
                         <textarea
                             value={content}
@@ -95,6 +126,22 @@ const CollaborationPage = () => {
                             rows="10"
                             cols="50"
                         />
+                    </div>
+
+                    <div>
+                        {/* <h1>Collaboration Room: {roomId}</h1> */}
+                        {question ? (
+                            <Question
+                                name={question["Question Title"]}
+                                description={question["Question Description"]}
+                                topics={question["Question Categories"]}
+                                leetcode_link={question["Link"]}
+                                difficulty={question["Question Complexity"]}
+                            />
+                        ) : (
+                            <p>Waiting for question...</p>
+                        )}
+                        <button onClick={handleLeave}>Leave Room</button>
                     </div>
                 </>
             )}
