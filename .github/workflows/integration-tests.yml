@@ -1,0 +1,21 @@
+name: Integration Test
+on: [push]
+jobs:
+  integration-tests:
+    name: integration-tests
+    runs-on: ubuntu-latest
+    steps:
+      # Check out the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Run Docker Compose Action
+      - name: Run integration tests
+        uses: adambirds/docker-compose-action@v1.5.0
+        with:
+          compose-file: "./docker-compose-tests.yaml"
+          up-flags: "--build"
+          down-flags: "--volumes"
+          test-container: "tests"
+          test-command: "pytest"
+          

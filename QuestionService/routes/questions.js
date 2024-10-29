@@ -95,11 +95,33 @@ router.post('/question', async (req, res) => {
     const difficulty = req.body.difficulty;
 
     // Check if request body is correctly filled
-    if (id === undefined || name === undefined || name === '' || description === undefined || description === '' ||
-    topics === undefined || difficulty === undefined) {
-        res.status(400).json({'error': 'Invalid Body'});
+    if (id === undefined) {
+        console.error('Error: id is required');
+        res.status(400).json({'error': 'id is required'});
+        return;
+    }
+    if (name === undefined || name === '') {
+        console.error('Error: name is required');
+        res.status(400).json({'error': 'name is required'});
+        return;
+    }
+    if (description === undefined || description === '') {
+        console.error('Error: description is required');
+        res.status(400).json({'error': 'description is required'});
+        return;
+    }
+    if (topics === undefined) {
+        console.error('Error: topics are required');
+        res.status(400).json({'error': 'topics are required'});
+        return;
+    }
+    if (difficulty === undefined) {
+        console.error('Error: difficulty is required');
+        res.status(400).json({'error': 'difficulty is required'});
+        return;
     }
     if (!difficulties.includes(difficulty)) {
+        console.error('Error: Invalid Difficulty');
         res.status(400).json({'error': 'Invalid Difficulty'});
         return;
     }
@@ -108,10 +130,20 @@ router.post('/question', async (req, res) => {
     // Check if a question with the same ID, Title or Description already exists
     const existing_questions = await collection.find({}).toArray();
     for (const question of existing_questions) {
-        if (question['Question ID'] === id || question['Question Title'] === name ||
-            question['Question Description'] === description ||
-            leetcode_link !== undefined && question.Link === leetcode_link) {
-            res.status(400).json({'error': 'Question already exists'});
+        if (question['Question ID'] === id) {
+            res.status(400).json({'error': 'Question ID already exists'});
+            return;
+        }
+        if (question['Question Title'] === name) {
+            res.status(400).json({'error': 'Question Title already exists'});
+            return;
+        }
+        if (question['Question Description'] === description) {
+            res.status(400).json({'error': 'Question Description already exists'});
+            return;
+        }
+        if (leetcode_link !== undefined && question.Link === leetcode_link) {
+            res.status(400).json({'error': 'Leetcode link already exists'});
             return;
         }
     }
@@ -197,10 +229,21 @@ router.patch('/question/:questionId', async (req, res) => {
     const existing_questions = await collection.find({}).toArray();
     for (const question of existing_questions) {
         if (question['Question ID'] === id) { continue; }
-        if (question['Question Title'] === name ||
-            question['Question Description'] === description ||
-            leetcode_link !== undefined && question.Link === leetcode_link) {
-            res.status(400).json({'error': 'Question already exists'});
+        if (question['Question ID'] === id) {
+            res.status(400).json({'error': 'Question ID already exists'});
+            return;
+        }
+        if (question['Question Title'] === name) {
+            res.status(400).json({'error': 'Question Title already exists'});
+            return;
+        }
+        if (question['Question Description'] === description) {
+            console.log("HERE " + id);
+            res.status(400).json({'error': 'Question Description already exists'});
+            return;
+        }
+        if (leetcode_link !== undefined && question.Link === leetcode_link) {
+            res.status(400).json({'error': 'Leetcode link already exists'});
             return;
         }
     }

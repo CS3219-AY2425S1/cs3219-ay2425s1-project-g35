@@ -13,20 +13,6 @@ services:
     networks:
       - app-network
 
-  # Seed MongoDB server with sample questions
-  mongo-seed:
-    build: ./mongo-seed
-    container_name: mongo-seed
-    volumes:
-      - ./mongo-seed:/mongo-seed
-    depends_on:
-      user-service:
-        condition: service_healthy
-      question-service:
-        condition: service_started
-    networks:
-      - app-network
-
   # QuestionService
   question-service:
     build: ./QuestionService
@@ -74,6 +60,20 @@ services:
       timeout: 5s
       retries: 5
 
+  # Seed MongoDB server with sample questions
+  mongo-seed:
+    build: ./mongo-seed
+    container_name: mongo-seed
+    volumes:
+      - ./mongo-seed:/mongo-seed
+    depends_on:
+      user-service:
+        condition: service_healthy
+      question-service:
+        condition: service_started
+    networks:
+      - app-network
+
   # MatchingService
   matching-service:
     build: ./MatchingService
@@ -110,12 +110,17 @@ services:
     networks:
       - app-network
 
-  # Frontend
-  frontend:
-    build: ./frontend
-    container_name: frontend
-    ports:
-      - "8080:5173"
+  # Tests
+  tests:
+    build: ./tests
+    container_name: tests
+    depends_on:
+      user-service:
+        condition: service_healthy
+      question-service:
+        condition: service_started
+      mongo-seed:
+        condition: service_completed_successfully
     networks:
       - app-network
 

@@ -5,10 +5,25 @@
 ## Group: G35
 
 ### Deployment
+
 #### Prerequisites
+
 1. Docker
+
 #### Steps
+
 1. Run `docker-compose up -d`
+
+### Develoment
+
+#### Prerequisites
+
+1. Docker
+
+#### Running Tests
+
+1. Use the `docker-comose-tests.yaml` file to run integration tests via `docker-compose -f .\docker-compose-tests.yaml up -d --build`
+
 ### Note:
 
 - You can choose to develop individual microservices within separate folders within this repository **OR** use individual repositories (all public) for each microservice.
