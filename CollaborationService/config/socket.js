@@ -62,6 +62,8 @@ function createSocket(io) {
             } else {
                 console.error(`Could not find userId for disconnected socket: ${socket.id}`);
             }
+
+            socket.to(roomId).emit('partner_disconnect', userId);
         });
     });
 }
