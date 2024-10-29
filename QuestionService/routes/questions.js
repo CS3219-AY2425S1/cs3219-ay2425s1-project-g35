@@ -81,6 +81,44 @@ router.get('/questions', async (req, res, next) => {
     res.send(result);
 });
 
+/* GET a random question */
+router.get('/question/random', async (req, res, next) => {
+    const token = req.cookies.accessToken;
+    if (!await verifyUser(token)) {
+        return res.status(401).json({ message: "Authentication failed" });
+    }
+
+    const topic = req.query.topic;
+    const difficulty = req.query.difficulty;
+    const collection = await db.collection('questions');
+
+    const query = {};
+    if (topic !== undefined) {
+        query['Question Categories'] = topic; // Query based on topic
+    }
+    if (difficulty !== undefined) {
+        query['Question Complexity'] = difficulty; // Query based on difficulty
+    }
+
+    try {
+        const questions = await collection.find(query).toArray();
+        
+        if (questions.length === 0) {
+            return res.status(404).json({ error: 'No questions found' });
+        }
+        
+        // Select a random question from the list
+        const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+        delete randomQuestion['_id'];
+
+        res.json(randomQuestion);
+    } catch (error) {
+        console.error("Error retrieving random question:", error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+
 /* POST add a question */
 router.post('/question', async (req, res) => {
     const token = req.cookies.accessToken;
