@@ -100,7 +100,7 @@ function findMatch(queue, userId, topic, difficulty) {
 }
 
 function generateRoomId(user1_id, user2_id) {
-    return user1_id + user2_id;
+    return user1_id + user2_id + Date.now();
 }
 
 export default {
