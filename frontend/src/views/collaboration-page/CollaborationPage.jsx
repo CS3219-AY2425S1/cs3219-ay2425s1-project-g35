@@ -115,7 +115,6 @@ const CollaborationPage = () => {
                 <p>Loading...</p>
             ) : (
                 <>
-                    
                     <div>
                         <textarea
                             value={content}
@@ -126,20 +125,21 @@ const CollaborationPage = () => {
                         />
                     </div>
 
-                    <div>
-                        {/* <h1>Collaboration Room: {roomId}</h1> */}
-                        {question ? (
-                            <Question
-                                name={question["Question Title"]}
-                                description={question["Question Description"]}
-                                topics={question["Question Categories"]}
-                                leetcode_link={question["Link"]}
-                                difficulty={question["Question Complexity"]}
-                            />
-                        ) : (
-                            <p>Waiting for question...</p>
-                        )}
-                        <button onClick={handleLeave}>Leave Room</button>
+                    <div className={styles.questionAreaContainer}>
+                        <div className={styles.questionArea}>
+                            {question ? (
+                                <Question
+                                    name={question["Question Title"]}
+                                    description={question["Question Description"]}
+                                    topics={question["Question Categories"]}
+                                    leetcode_link={question["Link"]}
+                                    difficulty={question["Question Complexity"]}
+                                />
+                            ) : (
+                                <p>Waiting for question...</p>
+                            )}
+                        </div>
+                        <button onClick={handleLeave} className={styles.leaveRoomButton}>Leave Room</button>
                     </div>
                 </>
             )}
