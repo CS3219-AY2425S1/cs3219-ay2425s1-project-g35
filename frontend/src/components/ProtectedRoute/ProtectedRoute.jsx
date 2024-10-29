@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useCookies } from "react-cookie";
+import { useEffect, useState } from "react";
 
 async function verifyUser(token) {
     try {
@@ -27,7 +28,21 @@ async function verifyUser(token) {
 }
 const ProtectedRoute = () => {
     const [cookies] = useCookies(["accessToken", "userId"]);
-    return verifyUser(cookies.accessToken) === true
+    const [isVerified, setIsVerified] = useState(null);
+
+    useEffect(() => {
+        const checkUser = async () => {
+            const result = await verifyUser(cookies.accessToken);
+            setIsVerified(result);
+        };
+        checkUser();
+    }, [cookies.accessToken]);
+
+    if (isVerified === null) {
+        return <div>Loading...</div>;
+    }
+
+    return isVerified
         ? <Outlet />
         : <Navigate to="/login" replace />;
 };

@@ -83,10 +83,6 @@ router.get('/questions', async (req, res, next) => {
 
 /* GET a random question */
 router.get('/question/random', async (req, res, next) => {
-    const token = req.cookies.accessToken;
-    if (!await verifyUser(token)) {
-        return res.status(401).json({ message: "Authentication failed" });
-    }
 
     const topic = req.query.topic;
     const difficulty = req.query.difficulty;
