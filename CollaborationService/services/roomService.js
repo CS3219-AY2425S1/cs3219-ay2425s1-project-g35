@@ -2,15 +2,22 @@ import Room from '../models/room-model.js';
 
 const rooms = {}; 
 
-function createRoom(roomId, user1, user2, topic, difficulty) {
-    // Sample hardcoded question
-    const question = {
-        "Question ID": 101,
-        "Question Title": "Two Sum",
-        "Question Description": "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
-        "Question Categories": ["Array", "Hash Table"],
-        "Link": "https://leetcode.com/problems/two-sum/",
-        "Question Complexity": "Easy"
+async function createRoom(roomId, user1, user2, topic, difficulty) {
+    let question;
+    try {
+        const response = await fetch(`http://localhost:4000/question/random?topic=${topic}&difficulty=${difficulty}`, {
+            method: 'GET',
+        });
+        
+        if (!response.ok) {
+            console.log(response);
+            throw new Error("Failed to fetch question");
+        }
+        
+        question = await response.json();
+    } catch (error) {
+        console.error("Error fetching question:", error);
+        return null;
     }
     
     rooms[roomId] = new Room(roomId, user1, user2, question);

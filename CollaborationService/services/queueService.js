@@ -19,7 +19,7 @@ async function consumeMatchFound(processMessage, io) {
                 console.log(`Consumed message from ${MATCH_FOUND_QUEUE}`, message);
 
                 try {
-                    processMessage(message, io);
+                    await processMessage(message, io);
                     channel.ack(msg);
                 } catch (error) {
                     console.log(error);
