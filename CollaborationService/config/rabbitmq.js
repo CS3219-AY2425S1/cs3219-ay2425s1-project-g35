@@ -1,16 +1,13 @@
 import amqp from 'amqplib';
 const hostname = 'rabbitmq';
 
-// to do: change connection
 async function connectRabbitMQ(retries = 5) {
     try {
-        const connection = await amqp.connect(
-        //     {
-        //     protocol: 'amqp',
-        //     hostname: hostname, 
-        //     port: 5672,
-        // }
-    );
+        const connection = await amqp.connect({
+            protocol: 'amqp',
+            hostname: hostname, 
+            port: 5672,
+        });
         const channel = await connection.createChannel();
         console.log("Successfully connected to RabbitMQ")
         return { connection, channel };

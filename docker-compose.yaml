@@ -110,6 +110,17 @@ services:
     networks:
       - app-network
 
+  # CollaborationService
+  collaboration-service:
+    build: ./CollaborationService
+    container_name: CollaborationService
+    ports:
+      - "3002:3002"
+    depends_on:
+      - rabbitmq
+    networks:
+      - app-network
+
   # Frontend
   frontend:
     build: ./frontend

@@ -5,7 +5,7 @@ const rooms = {};
 async function createRoom(roomId, user1, user2, topic, difficulty) {
     let question;
     try {
-        const response = await fetch(`http://localhost:4000/question/random?topic=${topic}&difficulty=${difficulty}`, {
+        const response = await fetch(`http://question-service:3000/question/random?topic=${topic}&difficulty=${difficulty}`, {
             method: 'GET',
         });
         
