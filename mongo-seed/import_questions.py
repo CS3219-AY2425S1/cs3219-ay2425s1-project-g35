@@ -32,7 +32,7 @@ def import_questions():
         for question in questions:
             payload = {
                 "id": int(question["Question ID"]),
-                "name": question["Question ID"],
+                "name": question["Question Title"],
                 "description": question["Question Description"],
                 "topics": question["Question Categories"],
                 "leetcode_link": question["Link"],

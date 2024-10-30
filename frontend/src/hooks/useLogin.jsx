@@ -5,7 +5,7 @@ import { useCookies } from 'react-cookie';
 const useLogin = () => {
     const [isLoading, setLoading] = useState(false);
     const [isInvalidLogin, setIsInvalidLogin] = useState(false);
-    const [cookies, setCookie] = useCookies([ "accessToken", "userId" ]);
+    const [cookies, setCookie] = useCookies([ "username", "accessToken", "userId" ]);
     const navigate = useNavigate();
 
     const handleLogin = async (email, password) => {

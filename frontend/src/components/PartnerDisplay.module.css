@@ -1,0 +1,25 @@
+.container {
+    background-color: white;
+    display: flex;
+    border-radius: 10px;
+    align-items: center;
+    justify-content: center;
+    min-width: 200px;
+    gap: 10px;
+
+}
+
+.statusDot {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.green {
+    background-color: green;
+}
+
+.red {
+    background-color: red;
+}

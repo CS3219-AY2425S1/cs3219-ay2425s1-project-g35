@@ -61,3 +61,8 @@ textarea {
 .leaveRoomButton:focus {
     outline: none; 
 }
+
+.questionFooter {
+    display: flex;
+    gap: 10px;
+}

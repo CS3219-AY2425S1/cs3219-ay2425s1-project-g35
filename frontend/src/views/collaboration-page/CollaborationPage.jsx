@@ -4,17 +4,19 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCookies } from "react-cookie";
 import Question from '../../components/Question';
 import Editor from '@monaco-editor/react'; 
+import PartnerDisplay from '../../components/PartnerDisplay';
 
 import styles from './CollaborationPage.module.css';
 
 const CollaborationPage = () => {
-    const [cookies] = useCookies(["accessToken", "userId"]);
+    const [cookies] = useCookies(["username", "accessToken", "userId"]);
     const { roomId } = useParams(); 
     const [question, setQuestion] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [content, setContent] = useState('');
     const [cursors, setCursors] = useState({});
-    const [isJoined, setIsJoined] = useState(false);
+    const [partnerUsername, setPartnerUsername] = useState('');
+    const [isConnected, setIsConnected] = useState(false);
 
     const navigate = useNavigate();
     const socketRef = useRef(null);
@@ -29,6 +31,7 @@ const CollaborationPage = () => {
         if (joinedState) {
             socketRef.current.emit('joinRoom', { roomId });
             localStorage.setItem(`joined-${roomId}`, 'true');
+            socketRef.current.emit('first_username', { roomId, username: cookies.username });
         }
         
         socketRef.current.on('collaboration_ready', (data) => {
@@ -36,6 +39,7 @@ const CollaborationPage = () => {
             setIsLoading(false);
             socketRef.current.emit('joinRoom', { roomId });
             localStorage.setItem(`joined-${roomId}`, 'true');
+            socketRef.current.emit('first_username', { roomId, username: cookies.username });
         });
 
         socketRef.current.on('load_room_content', (data) => {
@@ -43,6 +47,22 @@ const CollaborationPage = () => {
             setContent(data.documentContent);
             setCursors(data.cursors);
             setIsLoading(false);
+            
+        });
+
+        // Listen for partner username event
+        socketRef.current.on('first_username', (data) => {
+            console.log(`Received partner_username event from user: ${data.username}`);
+            setPartnerUsername(data.username);
+            socketRef.current.emit('second_username', { roomId, username: cookies.username });
+            setIsConnected(true);
+        });
+
+        socketRef.current.on('second_username', (data) => {
+            console.log(`Received partner_username event from user: ${data.username}`);
+            setPartnerUsername(data.username);
+            setIsConnected(true);
+
         });
         
         socketRef.current.on('documentUpdate', (data) => {
@@ -58,6 +78,7 @@ const CollaborationPage = () => {
 
         socketRef.current.on('partner_disconnect', (data) => {
             alert(`Received partner_disconnect event from user: ${data.username}`);
+            setIsConnected(false);
         });
         
         return () => {
@@ -84,6 +105,7 @@ const CollaborationPage = () => {
             ) : (
                 <>
                     <div className="editorContainer">
+                    {/* { partnerUsername && <PartnerDisplay partnerUsername={partnerUsername} /> } */}
                         <Editor
                             height="100%"
                             defaultLanguage="javascript"
@@ -103,6 +125,7 @@ const CollaborationPage = () => {
                                 folding: true,
                             }}
                         />
+                        
                     </div>
 
                     <div className={styles.questionAreaContainer}>
@@ -119,7 +142,11 @@ const CollaborationPage = () => {
                                 <p>Waiting for question...</p>
                             )}
                         </div>
-                        <button onClick={handleLeave} className={styles.leaveRoomButton}>Leave Room</button>
+                        <div className={styles.questionFooter}>
+                            <PartnerDisplay partnerUsername={partnerUsername} isConnected={isConnected} />
+                            <button onClick={handleLeave} className={styles.leaveRoomButton}>Leave Room</button>
+
+                        </div>
                     </div>
                 </>
             )}

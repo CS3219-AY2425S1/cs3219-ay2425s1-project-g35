@@ -26,8 +26,17 @@ nav {
 .navButton {
     background-color: white;
     color: black;
-    margin-top: 10px;
     margin-right: 10px;
     border-radius: 10px;
     padding: 10px 15px;
+}
+
+.navContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navContainer div {
+    text-align: center;
 }

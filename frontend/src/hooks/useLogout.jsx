@@ -7,6 +7,7 @@ const useLogout = () => {
     const handleLogout = () => {
         removeCookie("accessToken", { path: '/' });
         removeCookie("userId", { path: '/' });
+        removeCookie("username", { path: '/' });
         navigate("/login", { replace: true} );
     }
 
