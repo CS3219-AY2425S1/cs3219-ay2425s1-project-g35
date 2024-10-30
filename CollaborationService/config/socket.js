@@ -65,6 +65,16 @@ function createSocket(io) {
 
             socket.to(roomId).emit('partner_disconnect', { username });
         });
+        // partner username event
+        socket.on('first_username', ({ roomId, username }) => {
+            console.log(`Received first_username event from user: ${username}`);
+            socket.to(roomId).emit('first_username', { username });
+        });
+
+        socket.on('second_username', ({ roomId, username }) => {
+            console.log(`Received first_username event from user: ${username}`);
+            socket.to(roomId).emit('second_username', { username });
+        });
     });
 }
 
