@@ -77,7 +77,7 @@ const CollaborationPage = () => {
         });
 
         socketRef.current.on('partner_disconnect', (data) => {
-            alert(`Received partner_disconnect event from user: ${data.username}`);
+            alert(`${data.username} has left the room!`);
             setIsConnected(false);
         });
         
