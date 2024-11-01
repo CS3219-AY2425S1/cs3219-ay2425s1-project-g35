@@ -20,13 +20,15 @@ async function createRoom(roomId, user1, user2, topic, difficulty) {
             "Link": "https://leetcode.com/problems/longest-common-subsequence/",
             "Question Complexity": difficulty
         }
+
+        question = await response.json();
         
         if (!response.ok) {
             console.log(response);
-            throw new Error("Failed to fetch question");
+            console.error("Failed to fetch question");
+            question = defaultQuestion;
         }
         
-        question = await response.json();
     } catch (error) {
         console.error("Error fetching question:", error);
         return null;
