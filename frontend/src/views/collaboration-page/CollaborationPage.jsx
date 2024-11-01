@@ -14,7 +14,6 @@ const CollaborationPage = () => {
     const [question, setQuestion] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [content, setContent] = useState('');
-    const [cursors, setCursors] = useState({});
     const [partnerUsername, setPartnerUsername] = useState('');
     const [isConnected, setIsConnected] = useState(false);
 
@@ -29,31 +28,35 @@ const CollaborationPage = () => {
         const joinedState = localStorage.getItem(`joined-${roomId}`) === 'true';
 
         if (joinedState) {
+            console.log('Emitting joinRoom');
             socketRef.current.emit('joinRoom', { roomId });
             localStorage.setItem(`joined-${roomId}`, 'true');
+            console.log('Emitting first_username');
             socketRef.current.emit('first_username', { roomId, username: cookies.username });
         }
         
         socketRef.current.on('collaboration_ready', (data) => {
             setQuestion(data.question);
             setIsLoading(false);
+            console.log('collaboration_ready event received');
+            console.log('Emitting joinRoom');
             socketRef.current.emit('joinRoom', { roomId });
             localStorage.setItem(`joined-${roomId}`, 'true');
+            console.log('Emitting first_username');
             socketRef.current.emit('first_username', { roomId, username: cookies.username });
         });
 
         socketRef.current.on('load_room_content', (data) => {
             setQuestion(data.question);
             setContent(data.documentContent);
-            setCursors(data.cursors);
             setIsLoading(false);
-            
+            console.log('load_room_content event received');
         });
 
-        // Listen for partner username event
         socketRef.current.on('first_username', (data) => {
             console.log(`Received partner_username event from user: ${data.username}`);
             setPartnerUsername(data.username);
+            console.log('Emitting second_username');
             socketRef.current.emit('second_username', { roomId, username: cookies.username });
             setIsConnected(true);
         });
@@ -62,37 +65,34 @@ const CollaborationPage = () => {
             console.log(`Received partner_username event from user: ${data.username}`);
             setPartnerUsername(data.username);
             setIsConnected(true);
-
         });
         
         socketRef.current.on('documentUpdate', (data) => {
+            console.log('documentUpdate event received: ', data.content);
             setContent(data.content);
-        });
-
-        socketRef.current.on('cursorUpdate', (data) => {
-            setCursors((prevCursors) => ({
-                ...prevCursors,
-                [data.userId]: data.cursorPosition,
-            }));
         });
 
         socketRef.current.on('partner_disconnect', (data) => {
             alert(`${data.username} has left the room!`);
+            console.log(`partner_disconnect event received for user: ${data.username}`);
             setIsConnected(false);
         });
         
         return () => {
+            console.log('Disconnecting socket');
             socketRef.current.disconnect();
         };
     }, [roomId, cookies.userId]);
 
     const handleEditorChange = (newContent) => {
         setContent(newContent);
+        console.log('Emitting editDocument with new content: ', newContent);
         socketRef.current.emit('editDocument', { roomId, content: newContent });
     };
 
     const handleLeave = () => {
         const username = cookies.username;
+        console.log('Emitting custom_disconnect before navigating away');
         socketRef.current.emit('custom_disconnect', { roomId, username });
         navigate('/', { replace: true });
         socketRef.current.disconnect();
@@ -105,10 +105,8 @@ const CollaborationPage = () => {
             ) : (
                 <>
                     <div className="editorContainer">
-                    {/* { partnerUsername && <PartnerDisplay partnerUsername={partnerUsername} /> } */}
                         <Editor
                             height="100%"
-                            defaultLanguage="javascript"
                             theme="light"
                             value={content}
                             onChange={handleEditorChange}
@@ -125,7 +123,6 @@ const CollaborationPage = () => {
                                 folding: true,
                             }}
                         />
-                        
                     </div>
 
                     <div className={styles.questionAreaContainer}>
@@ -145,7 +142,6 @@ const CollaborationPage = () => {
                         <div className={styles.questionFooter}>
                             <PartnerDisplay partnerUsername={partnerUsername} isConnected={isConnected} />
                             <button onClick={handleLeave} className={styles.leaveRoomButton}>Leave Room</button>
-
                         </div>
                     </div>
                 </>

@@ -30,7 +30,7 @@ function createSocket(io) {
         socket.on('editDocument', ({ roomId, content }) => {
             console.log(`User ${socket.id} editing document in room: ${roomId}`);
             const room = getRoom(roomId);
-            if (room && content) {
+            if (room) {
                 updateContent(roomId, content);
                 console.log(`Updated document content in room ${roomId}. Broadcasting to other users.`);
                 socket.to(roomId).emit('documentUpdate', { content });
