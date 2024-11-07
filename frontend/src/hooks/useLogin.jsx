@@ -28,6 +28,9 @@ const useLogin = () => {
             }
             const data = await response.json();
             console.log(`successfully login ${email}`);
+            sessionStorage.setItem("accessToken", data["data"]["accessToken"]);
+            sessionStorage.setItem("userId", data["data"]["id"]);
+            sessionStorage.setItem("username", data["data"]["username"]);
             setCookie( "accessToken", data["data"]["accessToken"], { path: '/cs3219-ay2425s1-project-g35/' } );
             setCookie( "userId", data["data"]["id"], { path: '/cs3219-ay2425s1-project-g35/' } );
             setCookie( "username", data["data"]["username"], { path: '/cs3219-ay2425s1-project-g35/' } );

@@ -48,9 +48,10 @@ const useMatcher = (userId) => {
             setTimerStart(true);
             const response = await fetch(`${API_BASE_URL}/match`, {
                 method: 'POST',
-                credentials: "include",
+                // credentials: "include",
                 headers: {
                     'Content-Type': 'application/json',
+                    'Cookies': 'accessToken=' + sessionStorage.getItem('accessToken') + '; userId=' + sessionStorage.getItem('userId'),
                 },
                 body: JSON.stringify({
                     userId: userId,

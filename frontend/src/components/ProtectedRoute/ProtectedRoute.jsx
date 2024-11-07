@@ -27,9 +27,9 @@ async function verifyUser(token) {
     }
 }
 const ProtectedRoute = () => {
-    const [cookies] = useCookies(["accessToken", "userId"]);
+    // const [cookies] = useCookies(["accessToken", "userId"]);
     const [isVerified, setIsVerified] = useState(null);
-
+    const cookies = sessionStorage.getItem("accessToken");
     useEffect(() => {
         const checkUser = async () => {
             const result = await verifyUser(cookies.accessToken);
