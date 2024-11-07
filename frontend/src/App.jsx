@@ -16,16 +16,16 @@ function App() {
       <Router>
         <Routes>
           <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<MainPage />}>
+            <Route path="/cs3219-ay2425s1-project-g35/" element={<MainPage />}>
               {/* <Route index element={<QuestionTable />} />  */}
-              <Route path='/' element={<MatchingPage />} />
-              <Route path="/collab/:roomId" element={<CollaborationPage />} />
-              <Route path="/profile" element={<ProfilePage />} />
+              <Route path='/cs3219-ay2425s1-project-g35/' element={<MatchingPage />} />
+              <Route path="/cs3219-ay2425s1-project-g35/collab/:roomId" element={<CollaborationPage />} />
+              <Route path="/cs3219-ay2425s1-project-g35/profile" element={<ProfilePage />} />
             </Route>
           </Route>
 
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/cs3219-ay2425s1-project-g35/login" element={<LoginPage />} />
+          <Route path="/cs3219-ay2425s1-project-g35/register" element={<RegisterPage />} />
         </Routes>
       </Router>
     </div>
