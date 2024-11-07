@@ -31,7 +31,7 @@ const useLogin = () => {
             setCookie( "accessToken", data["data"]["accessToken"], { path: '/' } );
             setCookie( "userId", data["data"]["id"], { path: '/' } );
             setCookie( "username", data["data"]["username"], { path: '/' } );
-            navigate("/", { replace: true} );
+            navigate("/cs3219-ay2425s1-project-g35/", { replace: true} );
         } catch (error) {
             setIsInvalidLogin(true);
             setLoading(false);
