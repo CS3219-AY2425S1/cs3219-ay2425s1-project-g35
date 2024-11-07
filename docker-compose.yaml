@@ -137,6 +137,8 @@ services:
       - user-service
       - matching-service
       - collaboration-service
+    networks:
+      - app-network
 
   # ChatService
   chat-service:
