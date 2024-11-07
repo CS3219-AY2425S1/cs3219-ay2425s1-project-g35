@@ -28,7 +28,7 @@ const useMatcher = (userId) => {
             const roomId = matchFoundEvent.roomId;
             
             
-            navigate(`/collab/${roomId}`, { replace: true} );
+            navigate(`/cs3219-ay2425s1-project-g35/collab/${roomId}`, { replace: true} );
         });
 
         // Cleanup on unmount

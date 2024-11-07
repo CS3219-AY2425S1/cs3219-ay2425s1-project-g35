@@ -23,7 +23,7 @@ const Navbar = () => {
         if (isInCollabRoom) {
             alert("You cannot view profile while in a collaboration room. Leave the room first!"); // Alert if in collaboration room
         } else {
-            navigate("/profile", { replace: true} );
+            navigate("/cs3219-ay2425s1-project-g35/profile", { replace: true} );
         }
     };
 
@@ -31,7 +31,7 @@ const Navbar = () => {
         if (isInCollabRoom) {
             alert("You cannot view matching page while in a collaboration room. Leave the room first!"); // Alert if in collaboration room
         } else {
-            navigate("/", { replace: true} );
+            navigate("/cs3219-ay2425s1-project-g35/", { replace: true} );
         }
     };
 

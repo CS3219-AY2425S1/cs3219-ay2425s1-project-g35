@@ -133,7 +133,7 @@ const CollaborationPage = () => {
         console.log('Emitting custom_disconnect before navigating away');
         localStorage.clear();
         socketRef.current.emit('custom_disconnect', { roomId, username });
-        navigate('/', { replace: true });
+        navigate('/cs3219-ay2425s1-project-g35/', { replace: true });
         socketRef.current.disconnect();
     };
 

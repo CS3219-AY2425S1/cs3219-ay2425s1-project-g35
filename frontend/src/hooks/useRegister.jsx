@@ -29,7 +29,7 @@ const useRegister = () => {
             const data = await response.json();
             console.log(data);
             console.log(`successfully registered ${email}`);
-            navigate("/", { replace: true} );
+            navigate("/cs3219-ay2425s1-project-g35/", { replace: true} );
         } catch (error) {
             setIsInvalidRegister(true);
             setLoading(false);
