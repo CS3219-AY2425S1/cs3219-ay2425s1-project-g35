@@ -20,6 +20,9 @@ concurrency:
   group: "pages"
   cancel-in-progress: true
 
+defaults:
+  run:
+    working-directory: frontend
 jobs:
   # Single deploy job since we're just deploying
   deploy:
@@ -36,18 +39,16 @@ jobs:
           node-version: 20
           cache: "npm"
       - name: Install dependencies
-        working-directory: ./frontend
-        run: cd  frontend && npm install
+        run: npm install
       - name: Build
-        working-directory: ./frontend
-        run: cd frontend && npm run build
+        run: npm run build
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload dist repository
-          path: "./frontend/dist"
+          path: "./dist"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
