@@ -28,9 +28,9 @@ const useLogin = () => {
             }
             const data = await response.json();
             console.log(`successfully login ${email}`);
-            setCookie( "accessToken", data["data"]["accessToken"], { path: '/' } );
-            setCookie( "userId", data["data"]["id"], { path: '/' } );
-            setCookie( "username", data["data"]["username"], { path: '/' } );
+            setCookie( "accessToken", data["data"]["accessToken"], { path: '/cs3219-ay2425s1-project-g35/' } );
+            setCookie( "userId", data["data"]["id"], { path: '/cs3219-ay2425s1-project-g35/' } );
+            setCookie( "username", data["data"]["username"], { path: '/cs3219-ay2425s1-project-g35/' } );
             navigate("/cs3219-ay2425s1-project-g35/", { replace: true} );
         } catch (error) {
             setIsInvalidLogin(true);
