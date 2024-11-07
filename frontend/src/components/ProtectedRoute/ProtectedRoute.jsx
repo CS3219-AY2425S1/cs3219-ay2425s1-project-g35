@@ -44,7 +44,7 @@ const ProtectedRoute = () => {
 
     return isVerified
         ? <Outlet />
-        : <Navigate to="/login" replace />;
+        : <Navigate to="/cs3219-ay2425s1-project-g35/login" replace />;
 };
 
 export default ProtectedRoute;
