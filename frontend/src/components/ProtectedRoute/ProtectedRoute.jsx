@@ -29,14 +29,14 @@ async function verifyUser(token) {
 const ProtectedRoute = () => {
     // const [cookies] = useCookies(["accessToken", "userId"]);
     const [isVerified, setIsVerified] = useState(null);
-    const cookies = sessionStorage.getItem("accessToken");
+    var accessToken = sessionStorage.getItem("accessToken");
     useEffect(() => {
         const checkUser = async () => {
-            const result = await verifyUser(cookies.accessToken);
+            const result = await verifyUser(accessToken);
             setIsVerified(result);
         };
         checkUser();
-    }, [cookies.accessToken]);
+    }, [accessToken]);
 
     if (isVerified === null) {
         return <div>Loading...</div>;
