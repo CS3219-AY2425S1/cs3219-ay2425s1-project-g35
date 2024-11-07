@@ -73,7 +73,7 @@ const LoginPage = () => {
                         {isLoading ? 'Logging in...' : 'Login'}
                     </button>
                 </form>
-                <Link to={`/register`}> Register here </Link>
+                <Link to={`/cs3219-ay2425s1-project-g35/register`}> Register here </Link>
             </div>
         </div>
     );
