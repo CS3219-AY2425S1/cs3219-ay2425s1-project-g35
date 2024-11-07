@@ -12,7 +12,7 @@ const useMatcher = (userId) => {
 
     // Establish socket connection on component mount
     useEffect(() => {
-        const socketInstance = io('https://3103.seewhyjay.dev:3000');
+        const socketInstance = io('http://testcs3103.duckdns.org:2052');
         setSocket(socketInstance);
 
         socketInstance.on('connect', () => {
