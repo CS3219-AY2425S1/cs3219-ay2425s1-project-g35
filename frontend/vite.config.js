@@ -5,5 +5,5 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   // base: '/cs3219-ay2425s1-project-g35/'
-  base: './'
+  base: '/'
 })
