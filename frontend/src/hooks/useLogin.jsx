@@ -12,7 +12,7 @@ const useLogin = () => {
         setLoading(true);
         setIsInvalidLogin(false);
         try {
-            const response = await fetch(`http://localhost/api/users/auth/login`, {
+            const response = await fetch(`https://3103.seewhyjay.dev/api/users/auth/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json', 

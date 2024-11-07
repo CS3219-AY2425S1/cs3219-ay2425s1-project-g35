@@ -30,7 +30,7 @@ const CollaborationPage = () => {
 
     useEffect(() => {
         const userId = cookies.userId;
-        socketRef.current = io('http://localhost:3002', { query: { userId } });
+        socketRef.current = io('https://3103.seewhyjay.dev:3002', { query: { userId } });
         console.log('Connecting to the collaboration service server socket');
 
         const joinedState = localStorage.getItem(`joined-${roomId}`) === 'true';

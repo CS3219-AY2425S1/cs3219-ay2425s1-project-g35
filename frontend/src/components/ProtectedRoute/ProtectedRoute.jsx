@@ -6,7 +6,7 @@ async function verifyUser(token) {
     try {
         console.log("Verifying user " + token);
 
-        const response = await fetch('http://localhost/api/users/auth/verify-token', {
+        const response = await fetch('https://3103.seewhyjay.dev/api/users/auth/verify-token', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}` // Include the token in the header if required

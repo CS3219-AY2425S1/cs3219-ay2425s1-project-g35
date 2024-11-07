@@ -5,7 +5,7 @@ function useQuestionTable() {
 
     const fetchQuestions = async () => {
         try {
-            const response = await fetch('http://localhost/api/questions/questions', {credentials: "include"});
+            const response = await fetch('https://3103.seewhyjay.dev/api/questions/questions', {credentials: "include"});
             console.log(response);
             if (!response.ok) {
                 const errorData = await response.json();
@@ -27,7 +27,7 @@ function useQuestionTable() {
 
     const handleDelete = async (questionId) => {
         try {
-            const response = await fetch(`http://localhost/api/questions/question/${questionId}`, {
+            const response = await fetch(`https://3103.seewhyjay.dev/api/questions/question/${questionId}`, {
                 method: 'DELETE', credentials: "include"
             });
             if (!response.ok) {
@@ -48,7 +48,7 @@ function useQuestionTable() {
 
     const handleCreate = async (questionId, questionName, questionDescription, questionTopics, link, questionDifficulty) => {
         try {
-            const response = await fetch('http://localhost/api/questions/question', {
+            const response = await fetch('https://3103.seewhyjay.dev/api/questions/question', {
                 method: 'POST',
                 credentials: "include",
                 headers: {
@@ -80,7 +80,7 @@ function useQuestionTable() {
 
     const handleEdit = async (questionId, questionName, questionDescription, questionTopics, link, questionDifficulty) => {
         try {
-            const response = await fetch(`http://localhost/api/questions/question/${questionId}`, {
+            const response = await fetch(`https://3103.seewhyjay.dev/api/questions/question/${questionId}`, {
                 method: 'PATCH',
                 credetials: "include",
                 headers: {

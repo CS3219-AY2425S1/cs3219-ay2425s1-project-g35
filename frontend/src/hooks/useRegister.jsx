@@ -11,7 +11,7 @@ const useRegister = () => {
         setLoading(true);
         setIsInvalidRegister(false);
         try {
-            const response = await fetch('http://localhost/api/users/users', {
+            const response = await fetch('https://3103.seewhyjay.dev/api/users/users', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
