@@ -41,12 +41,14 @@ const CollaborationPage = () => {
 
     const { handleHistoryUpdate, isLoading: isHistoryLoading, isError: isHistoryError } = useHistoryUpdate();
 
+    const VITE_COLLABORATION_SERVICE_API = import.meta.env.VITE_COLLABORATION_SERVICE_API || 'http://localhost:3002';
+
     const navigate = useNavigate();
     const socketRef = useRef(null);
 
     useEffect(() => {
         const userId = cookies.userId;
-        socketRef.current = io('http://localhost:3002', { query: { userId } });
+        socketRef.current = io(VITE_COLLABORATION_SERVICE_API, { query: { userId } });
         console.log('Connecting to the collaboration service server socket');
 
         //const joinedState = localStorage.getItem(`joined-${roomId}`) === 'true';

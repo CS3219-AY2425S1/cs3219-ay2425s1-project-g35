@@ -2,6 +2,8 @@ var express = require('express');
 const connectToDatabase = require("../db/conn");
 var router = express.Router();
 
+const VITE_USER_SERVICE_API = 'http://user-service:3001' || 'http://localhost:3001';
+
 let db;
 connectToDatabase().then(database => {
     db = database;
@@ -13,7 +15,7 @@ async function verifyUser(token) {
     try {
         console.log("Verifying user " + token);
 
-        const response = await fetch('http://user-service:3001/auth/verify-token', {
+        const response = await fetch(`${VITE_USER_SERVICE_API}/auth/verify-token`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}` // Include the token in the header if required

@@ -6,6 +6,7 @@ function createSocket(io) {
     io.on('connection', (socket) => {
         console.log('User connected:', socket.id);
         const userId = socket.handshake.query.userId;
+        console.log("userId after handshake", userId);
 
         clientInstance.addClient(userId, socket.id);
 

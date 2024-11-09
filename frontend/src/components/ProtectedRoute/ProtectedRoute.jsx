@@ -2,11 +2,13 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useCookies } from "react-cookie";
 import { useEffect, useState } from "react";
 
+const VITE_USER_SERVICE_API = import.meta.env.VITE_USER_SERVICE_API || 'http://localhost/api/users';
+
 async function verifyUser(token) {
     try {
         console.log("Verifying user " + token);
 
-        const response = await fetch('http://localhost/api/users/auth/verify-token', {
+        const response = await fetch(`${VITE_USER_SERVICE_API}/auth/verify-token`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}` // Include the token in the header if required

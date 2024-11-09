@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: gcr.io/peerprep-438713/frontend-service:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5173
+        env:
+        - name: VITE_USER_SERVICE_API
+          value: "http://34.101.53.211:3001"
+        - name: VITE_QUESTION_SERVICE_API
+          value: "http://34.101.213.157:3000"
+        - name: VITE_MATCHING_SERVICE_API
+          value: "http://34.101.183.192:4000"
+        - name: VITE_COLLABORATION_SERVICE_API
+          value: "http://34.101.47.29:3002"
+        - name: VITE_CHAT_SERVICE_API
+          value: "http://34.101.130.176:3003"

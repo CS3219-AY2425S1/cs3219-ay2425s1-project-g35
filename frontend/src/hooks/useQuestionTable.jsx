@@ -3,9 +3,11 @@ import { useState, useEffect } from 'react'
 function useQuestionTable() {
     const [questions, setQuestions] = useState([]);
 
+    const VITE_QUESTION_SERVICE_API = import.meta.env.VITE_QUESTION_SERVICE_API || 'http://localhost/api/questions';
+
     const fetchQuestions = async () => {
         try {
-            const response = await fetch('http://localhost/api/questions/questions', {credentials: "include"});
+            const response = await fetch(`${VITE_QUESTION_SERVICE_API}/questions`, {credentials: "include"});
             console.log(response);
             if (!response.ok) {
                 const errorData = await response.json();
@@ -27,7 +29,7 @@ function useQuestionTable() {
 
     const handleDelete = async (questionId) => {
         try {
-            const response = await fetch(`http://localhost/api/questions/question/${questionId}`, {
+            const response = await fetch(`${VITE_QUESTION_SERVICE_API}/question/${questionId}`, {
                 method: 'DELETE', credentials: "include"
             });
             if (!response.ok) {
@@ -48,7 +50,7 @@ function useQuestionTable() {
 
     const handleCreate = async (questionId, questionName, questionDescription, questionTopics, link, questionDifficulty) => {
         try {
-            const response = await fetch('http://localhost/api/questions/question', {
+            const response = await fetch(`${VITE_QUESTION_SERVICE_API}/question`, {
                 method: 'POST',
                 credentials: "include",
                 headers: {
@@ -80,7 +82,7 @@ function useQuestionTable() {
 
     const handleEdit = async (questionId, questionName, questionDescription, questionTopics, link, questionDifficulty) => {
         try {
-            const response = await fetch(`http://localhost/api/questions/question/${questionId}`, {
+            const response = await fetch(`${VITE_QUESTION_SERVICE_API}/question/${questionId}`, {
                 method: 'PATCH',
                 credetials: "include",
                 headers: {
