@@ -53,7 +53,9 @@ jobs:
         - name: Merge coverage reports
           run: |
             mkdir -p coverage
-            istanbul-merge ./coverage-reports/*/coverage-final.json > coverage/coverage-final.json
+            istanbul report --dir coverage --include ./coverage-reports//**/coverage-final.json lcov
+#            istanbul-merge --out coverage/coverage-final.json ./coverage-reports/*/coverage-final.json
+#            istanbul-merge ./coverage-reports/*/coverage-final.json > coverage/coverage-final.json
 
         - name: Upload merged coverage report
           uses: actions/upload-artifact@v4
