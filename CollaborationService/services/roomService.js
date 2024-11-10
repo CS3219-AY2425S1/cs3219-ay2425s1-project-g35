@@ -50,7 +50,7 @@ async function createRoom(roomId, user1, user2, topic, difficulty) {
 
 async function getRoom(roomId) {
     const roomData = await redisClient.hGetAll(`room:${roomId}`);
-    
+
     if (!roomData || Object.keys(roomData).length === 0) {
         console.log(`Room data for ${roomId} is missing or empty.`);
         return null;
@@ -66,11 +66,14 @@ async function getRoom(roomId) {
     room.language = roomData.language;
     room.cursors = JSON.parse(roomData.cursors);
 
+    console.log('documentContent from Redis:', roomData.documentContent);
+
     return room;
 }
 
 async function updateContent(roomId, content) {
     await redisClient.hSet(`room:${roomId}`, 'documentContent', content); 
+    console.log('documentContent updated in Redis:', content);
 }
 
 async function updateLanguage(roomId, language) {

@@ -16,8 +16,7 @@ function createSocket(io) {
             socket.join(roomId);
             console.log(`User ${socket.id} joined room: ${roomId}`);
             if (room) {
-                console.log(`Room ${roomId} exists! Emmiting load_room_content event to user ${socket.id}`);
-
+                console.log(`Room ${roomId} exists! Emitting load_room_content event to user ${socket.id}`);
                 socket.emit('load_room_content', { 
                     question: room.question,
                     documentContent: room.documentContent,
@@ -27,8 +26,6 @@ function createSocket(io) {
                 console.error(`Room ${roomId} not found for user ${socket.id}`);
                 socket.emit('error', { message: 'Room not found' });
             }
-
-
         });
 
         socket.on('editDocument', async ({ roomId, content }) => {
