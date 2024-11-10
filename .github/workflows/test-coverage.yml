@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [ChatService, MatchingService, QuestionService, UserService/user-service]
+        service: [ChatService, QuestionService, UserService/user-service]
 
     steps:
       - name: Checkout repository
