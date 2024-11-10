@@ -36,7 +36,7 @@ const LoginPage = () => {
         <div className={styles.loginContainer}>
             <div className={styles.leftSection}>
                 <h1 className={styles.appTitle}>PeerPrep</h1>
-                <p className={styles.appSubtitle}>Sharpen your coding skills with others today</p>
+                <p className={styles.appSubtitle}>Sharpen your coding skills with others today!</p>
             </div>
 
             <div className={styles.rightSection}>

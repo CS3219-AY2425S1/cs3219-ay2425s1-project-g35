@@ -7,11 +7,15 @@ const useRegister = () => {
     const [isInvalidRegister, setIsInvalidRegister] = useState(false);
     const navigate = useNavigate();
 
+    const VITE_USER_SERVICE_API = import.meta.env.VITE_USER_SERVICE_API || 'http://localhost/api/users';
+    
+    console.log(VITE_USER_SERVICE_API);
+
     const handleRegister = async (username, email, password) => {
         setLoading(true);
         setIsInvalidRegister(false);
         try {
-            const response = await fetch('http://localhost/api/users/users', {
+            const response = await fetch(`${VITE_USER_SERVICE_API}/users`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -9,11 +9,13 @@ const useHistoryUpdate = () => {
     const [isError, setError] = useState(false);
     const [cookies] = useCookies(['accessToken']);
 
+    const VITE_USER_SERVICE_API = import.meta.env.VITE_USER_SERVICE_API || 'http://localhost/api/users';
+
     const handleHistoryUpdate = async (userId, sessionId, questionId, questionDescription, language, codeSnippet) => {
         setLoading(true);
         setError(false);
         try {
-            const response = await fetch(`http://localhost/api/users/users/${userId}/history`, {
+            const response = await fetch(`${VITE_USER_SERVICE_API}/users/${userId}/history`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

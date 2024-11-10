@@ -12,24 +12,16 @@ function Chat({ roomId }) {
     const socketRef = useRef(null);
     const messagesEndRef = useRef(null);
 
+    const VITE_CHAT_SERVICE_API = import.meta.env.VITE_CHAT_SERVICE_API || 'http://localhost:3003';
+
     useEffect(() => {
         const userId = cookies.userId;
         const username = cookies.username;
 
-        socketRef.current = io('http://localhost:3003', { query: { userId } });
+        socketRef.current = io(VITE_CHAT_SERVICE_API, { query: { userId } });
         console.log('Connecting to the chat service server socket');
 
         socketRef.current.emit('joinRoom', { roomId });
-
-        // const joinedState = localStorage.getItem(`chat-joined-${roomId}`) === 'true';
-
-        // if (joinedState) {
-        //     console.log('Emitting joinRoom for chat service');
-        //     socketRef.current.emit('joinRoom', { roomId });
-        //     localStorage.setItem(`chat-joined-${roomId}`, 'true');
-        //     console.log('Emitting first_username');
-        //     socketRef.current.emit('first_username', { roomId, username: cookies.username });
-        // }
 
         socketRef.current.on('chat message', (data) => {
             setMessages((prevMessages) => [...prevMessages, data.newMessage]);

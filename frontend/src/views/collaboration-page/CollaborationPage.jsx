@@ -12,25 +12,43 @@ import Chat from '../../components/Chat';
 import styles from './CollaborationPage.module.css';
 
 const CollaborationPage = () => {
+    const templateMap = {
+        'cpp': "#include <iostream>\n\n// YOUR FUNCTION BELOW\n\n// YOUR FUNCTION ABOVE\n\n\n// for testing\nint main() {\n  std::cout << /* put your function and parameters here */;\n}",
+        'java': "public class Solution {\n  // YOUR FUNCTION BELOW\n\n  // YOUR FUNCTION ABOVE\n\n  // for testing\n  public static void main(String args[]) {\n    System.out.println(/* put your function with parameters here */);\n  }\n}",
+        'javascript': "// YOUR FUNCTION BELOW\n\n// YOUR FUNCTION ABOVE\n\n\n// for testing\nconsole.log(/* put your function with parameters here */)",
+        'python': "# YOUR FUNCTION BELOW\n\n# YOUR FUNCTION ABOVE\n\n\n# for testing\nprint('''put your function with parameters here''')"
+    }
+
+    const versionMap = {
+        'cpp': '10.2.0',
+        'java': '15.0.2',
+        'javascript': '18.15.0',
+        'python': '3.10.0'
+    }
+
+    const [content, setContent] = useState(templateMap['javascript']); // actual content to be displayed
     const [cookies] = useCookies(["username", "accessToken", "userId"]);
     const { roomId } = useParams();
     const [question, setQuestion] = useState(null);
     const [questionTitle, setQuestionTitle] = useState(null);
     const [questionContent, setQuestionContent] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [content, setContent] = useState(''); // actual content to be displayed
     const [partnerUsername, setPartnerUsername] = useState('');
     const [isConnected, setIsConnected] = useState(false);
     const [language, setLanguage] = useState("javascript");
     const [theme, setTheme] = useState("githubLight");
+    const [executionResult, setExecutionResult] = useState('');
+
     const { handleHistoryUpdate, isLoading: isHistoryLoading, isError: isHistoryError } = useHistoryUpdate();
+
+    const VITE_COLLABORATION_SERVICE_API = import.meta.env.VITE_COLLABORATION_SERVICE_API || 'http://localhost:3002';
 
     const navigate = useNavigate();
     const socketRef = useRef(null);
 
     useEffect(() => {
         const userId = cookies.userId;
-        socketRef.current = io('http://localhost:3002', { query: { userId } });
+        socketRef.current = io(VITE_COLLABORATION_SERVICE_API, { query: { userId } });
         console.log('Connecting to the collaboration service server socket');
 
         //const joinedState = localStorage.getItem(`joined-${roomId}`) === 'true';
@@ -61,7 +79,7 @@ const CollaborationPage = () => {
             setQuestion(data.question);
             setQuestionTitle(data.question["Question Title"]);
             setQuestionContent(data.question["Question Description"])
-            setContent(data.documentContent);
+            setContent(templateMap['javascript']); // data.documentContent
             setIsLoading(false);
             console.log('load_room_content event received');
             socketRef.current.emit('first_username', { roomId, username: cookies.username });
@@ -149,8 +167,7 @@ const CollaborationPage = () => {
         const selectedLanguage = newLanguage.target.value
         setLanguage(selectedLanguage);
 
-        const savedSnippet = localStorage.getItem(`codeSnippet-${selectedLanguage}`) || '';
-        setContent(savedSnippet)
+        const savedSnippet = localStorage.getItem(`codeSnippet-${selectedLanguage}`) || templateMap[String(selectedLanguage)];
 
         console.log('Language change: ', selectedLanguage);
         socketRef.current.emit('editLanguage', { roomId, language: selectedLanguage });
@@ -161,6 +178,44 @@ const CollaborationPage = () => {
         setTheme(newTheme.target.value);
     }
 
+    const handleExecuteCode = async () => {
+        try {
+            const apiEndpoint = 'https://emkc.org/api/v2/piston/execute';
+            const response = await fetch(apiEndpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    "language": String(language),
+                    "version": versionMap[String(language)],
+                    "files": [
+                        {
+                            "content": content
+                        }
+                    ],
+                })
+            });
+            
+            const result = await response.json();
+            if (result) {
+                if (result.run.stdout) {
+                    setExecutionResult(result.run.stdout);
+                } else {
+                    setExecutionResult(result.run.stderr);
+                }
+            } else {
+                setExecutionResult("No response received");
+            }
+        } catch (error) {
+            console.error("Execution error:", error);
+            setExecutionResult(String(error));
+        }
+    };
+
+    const handleResetCode = async () => {
+        setContent(templateMap[String(language)]);
+        socketRef.current.emit('editDocument', { roomId, content: templateMap[String(language)] });
+    };
+      
     return (
         <div className={styles.CollaborationContainer}>
             {isLoading ? (
@@ -189,6 +244,12 @@ const CollaborationPage = () => {
                             currentCode={content}
                             setCurrentCode={handleEditorChange}
                         />
+
+                        <div className={styles.codeButtons}>
+                            <button onClick={handleExecuteCode} className={styles.runCodeButton}>Run Code</button>
+                            <button onClick={handleResetCode} className={styles.resetButton}>Reset</button>
+                        </div>
+                        <p className={styles.outputBox}><b>Output:</b> {executionResult}</p>
                     </div>
 
                     <div className={styles.questionAreaContainer}>
