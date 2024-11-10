@@ -26,14 +26,14 @@ jobs:
         run: npm run test:coverage
         working-directory: ./${{ matrix.service }}
 
+      - name: Set sanitized service name
+        run: echo "SANITIZED_SERVICE_NAME=${{ matrix.service }}" | sed 's|/|_|g' >> $GITHUB_ENV
+
       - name: Upload coverage report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
-          # Replace / with _ in the artifact name
-          name: ${{ matrix.service | replace('/', '_') }}-coverage
+          name: ${{ env.SANITIZED_SERVICE_NAME }}-coverage
           path: ${{ matrix.service }}/coverage
-
-
   aggregate:
     runs-on: ubuntu-latest
     needs: test
