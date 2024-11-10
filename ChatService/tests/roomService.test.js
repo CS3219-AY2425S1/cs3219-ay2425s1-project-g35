@@ -45,4 +45,10 @@ describe('roomService', () => {
         expect(room).toBe(existingRoom);
     });
 
+    it('should return undefined for a non-existent room', () => {
+        const nonExistentRoom = roomService.getRoom('non-existent-room');
+
+        expect(nonExistentRoom).toBeUndefined();
+    });
+
 });
