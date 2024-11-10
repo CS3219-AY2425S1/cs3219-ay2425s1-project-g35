@@ -14,9 +14,9 @@ const ProfilePage = () => {
     const [cookies] = useCookies(["username", "accessToken", "userId"]);
     const [activeLanguage, setActiveLanguage] = useState(null);
 
-    const [newUsername, setNewUsername] = useState('');
-    const [newEmail, setNewEmail] = useState('');
-    const [newPassword, setNewPassword] = useState('');
+    const [newUsername, setNewUsername] = useState(null);
+    const [newEmail, setNewEmail] = useState(null);
+    const [newPassword, setNewPassword] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [message, setMessage] = useState('');
 
@@ -40,18 +40,23 @@ const ProfilePage = () => {
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-        if (newUsername == '' && newEmail == '' && newPassword == '') {
+        if (!newUsername && !newEmail && !newPassword) {
             setMessage('Please fill in at least one field');
+            return;
+        }
+        if (newPassword && newPassword.length < 8) {
+            setMessage('Password must be at least 8 characters long.');
             return;
         }
 
         await handleUpdateProfile(newUsername, newEmail, newPassword);
         if (!isInvalidUpdate) {
             setMessage('Profile updated successfully');
-            setIsEditing(false);
-            setNewUsername('');
-            setNewEmail('');
-            setNewPassword('');
+            username = newUsername;
+            email = newEmail;
+            setNewUsername(null);
+            setNewEmail(null);
+            setNewPassword(null);
         } else {
             setMessage('Failed to update profile');
         }
