@@ -48,7 +48,15 @@ const CollaborationPage = () => {
 
     useEffect(() => {
         const userId = cookies.userId;
-        socketRef.current = io(VITE_COLLABORATION_SERVICE_API, { query: { userId } });
+        socketRef.current = io(VITE_COLLABORATION_SERVICE_API, { 
+            query: { userId },
+            reconnection: true,        
+            reconnectionAttempts: 3,    
+            reconnectionDelay: 2000,       
+            reconnectionDelayMax: 10000,   
+            timeout: 20000,                
+        });
+        
         console.log('Connecting to the collaboration service server socket');
 
         //const joinedState = localStorage.getItem(`joined-${roomId}`) === 'true';
@@ -79,7 +87,7 @@ const CollaborationPage = () => {
             setQuestion(data.question);
             setQuestionTitle(data.question["Question Title"]);
             setQuestionContent(data.question["Question Description"])
-            setContent(templateMap['javascript']); // data.documentContent
+            setContent(data.documentContent);
             setIsLoading(false);
             console.log('load_room_content event received');
             socketRef.current.emit('first_username', { roomId, username: cookies.username });
@@ -108,6 +116,15 @@ const CollaborationPage = () => {
         socketRef.current.on('languageUpdate', (data) => {
             console.log('languageUpdate event received: ', data.language);
             setLanguage(data.language);
+        });
+
+        socketRef.current.on('reconnect_attempt', (attempt) => {
+            console.log(`Attempting to reconnect... (${attempt})`);
+        });
+    
+        socketRef.current.on('reconnect_failed', () => {
+            console.error('Reconnection attempts failed');
+            alert('Unable to reconnect to the server');
         });
 
         socketRef.current.on('partner_disconnect', (data) => {
