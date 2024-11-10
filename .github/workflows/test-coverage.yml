@@ -54,7 +54,7 @@ jobs:
           run: |
             mkdir -p coverage-reports
             for file in ./coverage-reports/*; do
-            cp "$file" "coverage-reports/$(basename $file)"
+              cp "$file" "coverage-reports/$(basename $file)"
             done
 
         - name: Merge coverage reports
