@@ -48,15 +48,19 @@ jobs:
             path: ./coverage-reports
 
         - name: Install istanbul-merge
-          run: npm install -g istanbul-merge
+          run: npm install -g nyc
 
-        - name: Merge coverage reports
+        - name: Merge coverage reports with nyc
           run: |
-            mkdir -p coverage
-            istanbul-merge --out coverage/coverage-final.json ./coverage-reports/**/**.json
+            mkdir -p .nyc_output
+            cp ./coverage-reports/**/**.json .nyc_output/
+            nyc merge .nyc_output > coverage/coverage-final.json
 
-        - name: Upload merged coverage report
+        - name: Generate HTML report
+          run: nyc report --reporter=html
+
+        - name: Upload HTML report
           uses: actions/upload-artifact@v4
           with:
-            name: merged-coverage
-            path: coverage/coverage-final.json
+            name: html-coverage-report
+            path: coverage
