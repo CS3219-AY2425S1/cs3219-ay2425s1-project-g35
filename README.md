@@ -98,6 +98,10 @@ To ensure code quality, you can run integration tests using a dedicated Docker C
    ```
    - This will build and run the test environment as defined in `docker-compose-tests.yaml`.
 
----
+## Common Troubleshooting Tips
 
-If you encounter any issues, please consult your team members or reach out to the teaching team for assistance.
+### 1. Ensure that you remove volumes if you've made changes to mongo-seed
+
+Due to the way questions are seeded, if the earlier seeded questions are still in the mongo database, new questions with the same details/slightly changed details will be rejected.
+
+1. Run `docker compose down -v --remove-orphans`
