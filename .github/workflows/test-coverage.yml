@@ -47,14 +47,14 @@ jobs:
           with:
             path: ./coverage-reports
 
-        - name: Install istanbul-merge
+        - name: Install nyc
           run: npm install -g nyc
 
         - name: Merge coverage reports with nyc
           run: |
             mkdir -p .nyc_output
-            cp ./coverage-reports/**/**.json .nyc_output/
-            nyc merge .nyc_output > coverage/coverage-final.json
+            cp -r ./coverage-reports/**/ .nyc_output/
+            nyc merge .nyc_output ./.nyc_output/coverage.json
 
         - name: Generate HTML report
           run: nyc report --reporter=html
