@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [ChatService, MatchingService, QuestionService, UserService/user-service] # Add your services here
+        service: [ChatService, MatchingService, QuestionService, UserService/user-service]
 
     steps:
       - name: Checkout repository
@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '16'
+          node-version: '22'
 
       - name: Install dependencies
         run: npm install
@@ -38,7 +38,7 @@ jobs:
 
     steps:
       - name: Download coverage reports
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: '*-coverage'
 
@@ -48,7 +48,7 @@ jobs:
           nyc merge $(find . -name 'coverage-final.json') > coverage/coverage-summary.json
 
       - name: Upload combined coverage report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: combined-coverage
           path: coverage
