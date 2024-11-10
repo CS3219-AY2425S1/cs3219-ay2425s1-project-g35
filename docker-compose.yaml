@@ -120,6 +120,18 @@ services:
       - "3002"
     depends_on:
       - rabbitmq
+      - redis-collaboration
+    networks:
+      - app-network
+
+  # Distributed Cache for CollaborationService
+  redis-collaboration:
+    image: redis:alpine
+    container_name: redis-collaboration
+    depends_on:
+      - rabbitmq
+    ports:
+      - "6379" 
     networks:
       - app-network
 
