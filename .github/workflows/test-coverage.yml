@@ -26,6 +26,11 @@ jobs:
         run: npm run test:coverage
         working-directory: ./${{ matrix.service }}
 
+      - name: Verify coverage output
+        run: |
+          echo "Checking if coverage report exists..."
+          ls -al ./${{ matrix.service }}/coverage
+
       - name: Set sanitized service name
         run: echo "SANITIZED_SERVICE_NAME=${{ matrix.service }}" | sed 's|/|_|g' >> $GITHUB_ENV
 
