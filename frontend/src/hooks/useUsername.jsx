@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const API_URL = 'http://localhost/api/users/';
+const API_URL = import.meta.env.VITE_USER_SERVICE_API || 'http://localhost/api/users';
 
 const useUsername = (id) => {
     const [username, setUsername] = useState(null);

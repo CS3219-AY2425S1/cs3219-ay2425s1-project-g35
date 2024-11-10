@@ -14,6 +14,7 @@ async function handleMatchFound(matchData, io) {
     });
 
     console.log("Collaboration Ready sent for room ", room.roomId);
+    console.log("sent to ", user1_socketId, user2_sockerId);
 };
 
 export default {

@@ -30,6 +30,7 @@ services:
   # QuestionService
   question-service:
     build: ./QuestionService
+    image: gcr.io/peerprep-438713/question-service:latest
     container_name: question-service
     ports:
       - "3000"
@@ -58,6 +59,7 @@ services:
   # UserService
   user-service:
     build: ./UserService
+    image: gcr.io/peerprep-438713/user-service:latest
     container_name: user-service
     ports:
       - "3001"
@@ -157,6 +159,7 @@ services:
   # Frontend
   frontend:
     build: ./frontend
+    image: gcr.io/peerprep-438713/frontend-service:latest
     container_name: frontend
     ports:
       - "8080:5173"

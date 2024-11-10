@@ -1,0 +1,44 @@
+steps:
+  # Build and push user-service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/user-service:latest', './UserService']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/user-service:latest']
+
+  # Build and push question-service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/question-service:latest', './QuestionService']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/question-service:latest']
+
+  # Build and push matching-service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/matching-service:latest', './MatchingService']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/matching-service:latest']
+
+  # Build and push collaboration-service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/collaboration-service:latest', './CollaborationService']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/collaboration-service:latest']
+
+  # Build and push chat-service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/chat-service:latest', './ChatService']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/chat-service:latest']
+
+  # Build and push frontend-service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/frontend-service:latest', './frontend']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/frontend-service:latest']
+
+images:
+  - 'gcr.io/$PROJECT_ID/user-service:latest'
+  - 'gcr.io/$PROJECT_ID/question-service:latest'
+  - 'gcr.io/$PROJECT_ID/matching-service:latest'
+  - 'gcr.io/$PROJECT_ID/collaboration-service:latest'
+  - 'gcr.io/$PROJECT_ID/chat-service:latest'
+  - 'gcr.io/$PROJECT_ID/frontend-service:latest'

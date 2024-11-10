@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: import-questions-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: import-questions
+        image: gcr.io/peerprep-438713/mongo-seed:latest  # Replace with your Docker image
+        env:
+        - name: USER_ENDPOINT
+          value: "http://user-service:3001/"
+        - name: QUESTION_ENDPOINT
+          value: "http://question-service:3000/"
+        command: ["python3", "import_questions.py"]
+      restartPolicy: Never
+  backoffLimit: 2 
+

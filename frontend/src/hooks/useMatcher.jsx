@@ -6,13 +6,17 @@ const useMatcher = (userId) => {
     const [isMatchSuccessful, setIsMatchSuccessful] = useState(null);
     const [timerStart, setTimerStart] = useState(false);
     const [socket, setSocket] = useState(null);
-    const API_BASE_URL = 'http://localhost/api/match/matcher';
+
+    const VITE_MATCHING_SERVICE_API = import.meta.env.VITE_MATCHING_SERVICE_API || 'http://localhost/api/match';
+    const SOCKET_API = import.meta.env.VITE_MATCHING_SERVICE_API || 'http://localhost:3000';
+    const API_BASE_URL = `${VITE_MATCHING_SERVICE_API}/matcher`;
+
     const navigate = useNavigate();
     
 
     // Establish socket connection on component mount
     useEffect(() => {
-        const socketInstance = io('http://localhost:3000');
+        const socketInstance = io(SOCKET_API);
         setSocket(socketInstance);
 
         socketInstance.on('connect', () => {

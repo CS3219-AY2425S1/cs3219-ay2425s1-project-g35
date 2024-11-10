@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo-user
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongo-user
+  template:
+    metadata:
+      labels:
+        app: mongo-user
+    spec:
+      containers:
+      - name: mongo-user
+        image: mongo:latest
+        ports:
+        - containerPort: 27017
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: mongo-user-secret
+              key: MONGO_INITDB_ROOT_USERNAME
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mongo-user-secret
+              key: MONGO_INITDB_ROOT_PASSWORD
+        volumeMounts:
+        - name: mongo-user-storage
+          mountPath: /data/db
+      volumes:
+      - name: mongo-user-storage
+        persistentVolumeClaim:
+          claimName: mongo-user-pvc

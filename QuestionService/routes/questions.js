@@ -3,6 +3,8 @@ const connectToDatabase = require("../db/conn");
 var router = express.Router();
 const jwt = require('jsonwebtoken');
 
+const VITE_USER_SERVICE_API = 'http://user-service:3001' || 'http://localhost:3001';
+
 let db;
 connectToDatabase().then(database => {
     db = database;

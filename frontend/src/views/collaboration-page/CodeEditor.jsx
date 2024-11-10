@@ -34,7 +34,7 @@ const CodeEditor = ({
     }, [currentTheme])
 
     const calculateMinHeight = () => {
-        const lines = 46; // Adjust this to your desired initial lines
+        const lines = 16; // Adjust this to your desired initial lines
         const lineHeight = 18; // Approximate line height in pixels
         return `${lines * lineHeight}px`; // Set the min-height based on the number of lines
     }
