@@ -1,0 +1,54 @@
+name: Test Coverage
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [ChatService, MatchingService, QuestionService, UserService/user-service] # Add your services here
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./${{ matrix.service }}
+
+      - name: Run test coverage
+        run: npm run test:coverage
+        working-directory: ./${{ matrix.service }}
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.service }}-coverage
+          path: ${{ matrix.service }}/coverage
+
+  aggregate:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Download coverage reports
+        uses: actions/download-artifact@v2
+        with:
+          name: '*-coverage'
+
+      - name: Merge coverage reports
+        run: |
+          npm install -g nyc
+          nyc merge $(find . -name 'coverage-final.json') > coverage/coverage-summary.json
+
+      - name: Upload combined coverage report
+        uses: actions/upload-artifact@v2
+        with:
+          name: combined-coverage
+          path: coverage
