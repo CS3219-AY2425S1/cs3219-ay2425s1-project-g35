@@ -53,7 +53,10 @@ jobs:
         - name: Merge lcov reports
           run: |
             mkdir -p coverage
-            lcov -a ./coverage-reports/**/lcov.info -o coverage/merged-lcov.info
+            lcov --output-file coverage/merged-lcov.info
+            for file in ./coverage-reports/**/lcov.info; do
+              lcov -a "$file" -o coverage/merged-lcov.info
+            done
 
         - name: Generate HTML report from merged lcov
           run: |
