@@ -33,7 +33,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
            name: ${{ env.SANITIZED_SERVICE_NAME }}-coverage
-           path: ./${{ matrix.service }}/coverage # Path where coverage report is generated
+           path: ./${{ matrix.service }}/coverage/coverage-final.json
 
   merge-coverage:
       runs-on: ubuntu-latest
@@ -50,11 +50,19 @@ jobs:
         - name: Install istanbul-merge
           run: npm install -g istanbul-merge
 
+        - name: Copy coverage files to main directory
+          run: |
+            mkdir -p coverage-reports
+            for file in ./coverage-reports/*; do
+            cp "$file" "coverage-reports/$(basename $file)"
+            done
+
         - name: Merge coverage reports
           run: |
             mkdir -p coverage
-            istanbul-merge report --dir coverage --include ./coverage-reports//**/coverage-final.json lcov
-#            istanbul-merge --out coverage/coverage-final.json ./coverage-reports/*/coverage-final.json
+            cp
+#            istanbul-merge report --dir coverage --include ./coverage-reports//**/coverage-final.json lcov
+            istanbul-merge --out coverage/coverage-final.json ./coverage-reports/**.json
 #            istanbul-merge ./coverage-reports/*/coverage-final.json > coverage/coverage-final.json
 
         - name: Upload merged coverage report
