@@ -50,19 +50,12 @@ jobs:
         - name: Install istanbul-merge
           run: npm install -g istanbul-merge
 
-        - name: Copy coverage files to main directory
-          run: |
-            mkdir -p coverage-reports
-            for file in ./coverage-reports/*; do
-              cp "$file" "coverage-reports/$(basename $file)"
-            done
-
         - name: Merge coverage reports
           run: |
             mkdir -p coverage
             cp
 #            istanbul-merge report --dir coverage --include ./coverage-reports//**/coverage-final.json lcov
-            istanbul-merge --out coverage/coverage-final.json ./coverage-reports/**.json
+            istanbul-merge --out coverage/coverage-final.json ./coverage-reports/**/**.json
 #            istanbul-merge ./coverage-reports/*/coverage-final.json > coverage/coverage-final.json
 
         - name: Upload merged coverage report
