@@ -55,6 +55,11 @@ jobs:
             mkdir -p coverage
             lcov -a ./coverage-reports/MatchingService-coverage/lcov.info -a ./coverage-reports/QuestionService-coverage/lcov.info -a ./coverage-reports/CollaborationService-coverage/lcov.info -a ./coverage-reports/UserService_user-service-coverage/lcov.info -a ./coverage-reports/ChatService-coverage/lcov.info -o coverage/merged-lcov.info
 
+        - name: Adjust lcov paths
+          run: |
+            # Replace absolute paths with relative paths
+            lcov --remove coverage/merged-lcov.info '/usr/*' '/home/runner/*' --output-file coverage/merged-lcov.info
+
         - name: Generate HTML report from merged lcov
           run: |
             genhtml coverage/merged-lcov.info --output-directory coverage
