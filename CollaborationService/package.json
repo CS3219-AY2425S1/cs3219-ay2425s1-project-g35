@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
+  "jest": {
+    "testPathIgnorePatterns": ["collaborative-editor", "testSocket.js", "testQueueService.js"]
+  },
   "scripts": {
     "start": "node app",
     "dev": "node --watch --env-file=.env app",
