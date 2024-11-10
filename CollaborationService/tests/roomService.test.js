@@ -29,9 +29,12 @@ describe('roomService', () => {
     });
 
     test('createRoom should handle fetch error and return null', async () => {
+        const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
         fetch.mockRejectedValue(new Error('Network error'));
 
         const room = await roomService.createRoom('room1', 'user1', 'user2', 'topic', 'easy');
         expect(room).toBeNull();
+        // Restore console.error after the test
+        consoleErrorMock.mockRestore();
     });
 });
