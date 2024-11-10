@@ -4,7 +4,13 @@ import queueService from '../services/queueService';
 
 jest.mock('../models/queue-model.js');
 jest.mock('../services/queueService.js');
-
+jest.mock('../config/redis.js', () => {
+    const redisMock = require('redis-mock');
+    return {
+        __esModule: true,
+        default: () => redisMock.createClient(),
+    };
+});
 test('should add match request to Redis and publish to RabbitMQ', async () => {
     QueueModel.addRequest.mockResolvedValueOnce();
     queueService.publishMatchRequest.mockResolvedValueOnce();
