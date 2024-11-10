@@ -42,22 +42,22 @@ jobs:
         - name: Checkout repository
           uses: actions/checkout@v4
 
-        - name: Download coverage reports
+        - name: Download lcov reports
           uses: actions/download-artifact@v4
           with:
             path: ./coverage-reports
 
-        - name: Install nyc
-          run: npm install -g nyc
+        - name: Install lcov
+          run: sudo apt-get install -y lcov
 
-        - name: Merge coverage reports with nyc
+        - name: Merge lcov reports
           run: |
-            mkdir -p .nyc_output
-            cp -r ./coverage-reports/**/ .nyc_output/
-            nyc merge .nyc_output ./.nyc_output/coverage.json
+            mkdir -p coverage
+            lcov -a ./coverage-reports/**/lcov.info -o coverage/merged-lcov.info
 
-        - name: Generate HTML report
-          run: nyc report --reporter=html
+        - name: Generate HTML report from merged lcov
+          run: |
+            genhtml coverage/merged-lcov.info --output-directory coverage
 
         - name: Upload HTML report
           uses: actions/upload-artifact@v4
