@@ -25,3 +25,36 @@ jobs:
       - name: Run test coverage
         run: npm run test:coverage
         working-directory: ./${{ matrix.service }}
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+           name: coverage-${{ matrix.service }}
+           path: ./${{ matrix.service }}/coverage # Path where coverage report is generated
+
+  merge-coverage:
+      runs-on: ubuntu-latest
+      needs: test
+      steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+
+        - name: Download coverage reports
+          uses: actions/download-artifact@v4
+          with:
+            name: coverage-*
+            path: ./coverage-reports
+
+        - name: Install istanbul-merge
+          run: npm install -g istanbul-merge
+
+        - name: Merge coverage reports
+          run: |
+            mkdir -p coverage
+            istanbul-merge ./coverage-reports/*/coverage-final.json > coverage/coverage-final.json
+
+        - name: Upload merged coverage report
+          uses: actions/upload-artifact@v4
+          with:
+            name: merged-coverage
+            path: coverage/coverage-final.json
