@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: '22'
 
@@ -30,10 +30,12 @@ jobs:
         run: echo "SANITIZED_SERVICE_NAME=${{ matrix.service }}" | sed 's|/|_|g' >> $GITHUB_ENV
 
       - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+        if: success() && steps.verify.outputs.coverage-exists == 'true'
+        uses: actions/upload-artifact@v2
         with:
           name: ${{ env.SANITIZED_SERVICE_NAME }}-coverage
           path: ${{ matrix.service }}/coverage
+
   aggregate:
     runs-on: ubuntu-latest
     needs: test
