@@ -47,8 +47,8 @@ jobs:
     steps:
       - name: Download coverage reports
         uses: actions/download-artifact@v4
-        with:
-          name: '*-coverage'
+#        with:
+#          name: '*-coverage'
 
       - name: Merge coverage reports
         run: |
