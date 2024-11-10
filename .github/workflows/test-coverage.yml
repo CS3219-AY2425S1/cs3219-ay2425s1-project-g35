@@ -53,7 +53,6 @@ jobs:
         - name: Merge lcov reports
           run: |
             mkdir -p coverage
-            lcov --output-file coverage/merged-lcov.info
             lcov -a ./coverage-reports/MatchingService-coverage/lcov.info -a ./coverage-reports/QuestionService-coverage/lcov.info -a ./coverage-reports/CollaborationService-coverage/lcov.info -a ./coverage-reports/UserService_user-service-coverage/lcov.info -a ./coverage-reports/ChatService-coverage/lcov.info -o coverage/merged-lcov.info
 
         - name: Generate HTML report from merged lcov
