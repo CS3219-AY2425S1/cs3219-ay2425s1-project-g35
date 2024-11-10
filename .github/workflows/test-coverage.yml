@@ -33,7 +33,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
            name: ${{ env.SANITIZED_SERVICE_NAME }}-coverage
-           path: ./${{ matrix.service }}/coverage/coverage-final.json
+           path: ./${{ matrix.service }}/coverage/
 
   merge-coverage:
       runs-on: ubuntu-latest
