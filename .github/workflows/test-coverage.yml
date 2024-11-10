@@ -54,9 +54,7 @@ jobs:
           run: |
             mkdir -p coverage
             lcov --output-file coverage/merged-lcov.info
-            for file in ./coverage-reports/**/lcov.info; do
-              lcov -a "$file" -o coverage/merged-lcov.info
-            done
+            lcov -a ./coverage-reports/MatchingService-coverage/lcov.info -a ./coverage-reports/QuestionService-coverage/lcov.info -a ./coverage-reports/CollaborationService-coverage/lcov.info -a ./coverage-reports/UserService_user-service-coverage/lcov.info -a ./coverage-reports/ChatService-coverage/lcov.info -o coverage/merged-lcov.info
 
         - name: Generate HTML report from merged lcov
           run: |
