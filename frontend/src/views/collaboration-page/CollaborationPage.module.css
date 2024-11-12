@@ -86,6 +86,13 @@ textarea {
     width: 50%; 
 }
 
+.runCodeButton:disabled {
+    background-color: #7a9ebf;
+    color: #e0e0e0;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
 .resetButton {
     background-color: lightskyblue; 
     border-radius: 8px;
