@@ -4,7 +4,7 @@ class Room {
         this.users = [user1Id, user2Id]; 
         this.question = question; 
         this.documentContent = ''; 
-        this.language = 'javascript', // set javascript as the default
+        this.language = 'javascript'; // set JavaScript as the default
         this.cursors = {}; 
     }
 

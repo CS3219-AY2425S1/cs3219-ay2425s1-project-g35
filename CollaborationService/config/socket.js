@@ -10,14 +10,13 @@ function createSocket(io) {
 
         clientInstance.addClient(userId, socket.id);
 
-        socket.on('joinRoom', ({ roomId }) => {
+        socket.on('joinRoom', async ({ roomId }) => {
             console.log(`User ${socket.id} attempting to join room: ${roomId}`);
-            const room = getRoom(roomId);
+            const room = await getRoom(roomId);
             socket.join(roomId);
             console.log(`User ${socket.id} joined room: ${roomId}`);
             if (room) {
-                console.log(`Room ${roomId} exists! Emmiting load_room_content event to user ${socket.id}`);
-
+                console.log(`Room ${roomId} exists! Emitting load_room_content event to user ${socket.id}`);
                 socket.emit('load_room_content', { 
                     question: room.question,
                     documentContent: room.documentContent,
@@ -27,15 +26,13 @@ function createSocket(io) {
                 console.error(`Room ${roomId} not found for user ${socket.id}`);
                 socket.emit('error', { message: 'Room not found' });
             }
-
-
         });
 
-        socket.on('editDocument', ({ roomId, content }) => {
+        socket.on('editDocument', async ({ roomId, content }) => {
             console.log(`User ${socket.id} editing document in room: ${roomId}`);
-            const room = getRoom(roomId);
+            const room = await getRoom(roomId);
             if (room) {
-                updateContent(roomId, content);
+                await updateContent(roomId, content);
                 console.log(`Updated document content in room ${roomId}. Broadcasting to all users in the room.`);
                 io.in(roomId).emit('documentUpdate', { content }); // Emits to all users in the room, including the sender
             } else {
@@ -43,11 +40,11 @@ function createSocket(io) {
             }
         });
 
-        socket.on('editLanguage', ({ roomId, language }) => {
+        socket.on('editLanguage', async ({ roomId, language }) => {
             console.log(`User ${socket.id} changed language in room: ${roomId}`);
-            const room = getRoom(roomId);
+            const room = await getRoom(roomId);
             if (room) {
-                updateLanguage(roomId, language);
+                await updateLanguage(roomId, language);
                 console.log(`Updated language in room ${roomId}. Broadcasting to other users.`);
                 socket.to(roomId).emit('languageUpdate', { language });
             } else {
@@ -55,11 +52,11 @@ function createSocket(io) {
             }
         });
 
-        socket.on('updateCursor', ({ roomId, userId, cursorPosition }) => {
+        socket.on('updateCursor', async ({ roomId, userId, cursorPosition }) => {
             console.log(`User ${socket.id} updating cursor position in room: ${roomId} for user ${userId}`);
-            const room = getRoom(roomId);
+            const room = await getRoom(roomId);
             if (room && userId && cursorPosition) {
-                updateCursorPosition(roomId, userId, cursorPosition);
+                await updateCursorPosition(roomId, userId, cursorPosition);
                 console.log(`Updated cursor position for user ${userId} in room ${roomId}. Broadcasting to other users.`);
                 socket.to(roomId).emit('cursorUpdate', { userId, cursorPosition });
             } else {
@@ -67,24 +64,27 @@ function createSocket(io) {
             }
         });
 
-        socket.on('custom_disconnect', ({ roomId, username }, callback) => {
-            console.log('User disconnected:', socket.id);
+        socket.on('custom_disconnect', async ({ roomId, username }, callback) => {
+            try {
+                const userId = await clientInstance.getUserIdBySocketId(socket.id);
         
-            const userId = clientInstance.getUserIdBySocketId(socket.id);
+                if (userId) {
+                    await clientInstance.removeClient(userId);
+                    console.log(`Removed client with userId: ${userId} after disconnect.`);
+                } else {
+                    console.error(`Could not find userId for disconnected socket: ${socket.id}`);
+                }
         
-            if (userId) {
-                clientInstance.removeClient(userId);
-                console.log(`Removed client with userId: ${userId} after disconnect.`);
-            } else {
-                console.error(`Could not find userId for disconnected socket: ${socket.id}`);
+                socket.to(roomId).emit('partner_disconnect', { username });
+        
+                // Acknowledge disconnection
+                if (callback) callback();
+            } catch (error) {
+                console.error('Error handling custom disconnect:', error);
+                if (callback) callback(error);
             }
-        
-            // Notify other users in the room about the partner's disconnect
-            socket.to(roomId).emit('partner_disconnect', { username });
-        
-            // Call the callback function to acknowledge that the server has processed the disconnection
-            callback();
         });
+        
         // partner username event
         socket.on('first_username', ({ roomId, username }) => {
             console.log(`Received first_username event from user: ${username}`);
