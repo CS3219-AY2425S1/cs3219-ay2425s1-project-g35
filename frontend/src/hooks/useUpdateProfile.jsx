@@ -5,6 +5,7 @@ const useUpdateProfile = () => {
     const [isLoading, setLoading] = useState(false);
     const [isInvalidUpdate, setIsInvalidUpdate] = useState(false);
     const [cookies, setCookie] = useCookies(["username", "accessToken", "userId"]);
+    const updatedFields = [];
 
     const VITE_USER_SERVICE_API = import.meta.env.VITE_USER_SERVICE_API || 'http://localhost/api/users';
 
@@ -13,9 +14,18 @@ const useUpdateProfile = () => {
         setIsInvalidUpdate(false);
 
         const updateData = {};
-        if (username) updateData.username = username;
-        if (email) updateData.email = email;
-        if (password) updateData.password = password;
+        if (username) {
+            updateData.username = username;
+            updatedFields.push("username");
+        }
+        if (email) { 
+            updateData.email = email;
+            updatedFields.push("email");
+        }
+        if (password) {
+            updateData.password = password;
+            updatedFields.push("password");
+        }
 
         try {
             const response = await fetch(`${VITE_USER_SERVICE_API}/users/${cookies.userId}`, {
@@ -34,6 +44,7 @@ const useUpdateProfile = () => {
             setLoading(false);
             setCookie("username", data["data"]["username"], { path: '/' });
             setCookie("userId", data["data"]["id"], { path: '/' });
+            setCookie("email", data["data"]["email"], { path: '/' })
             console.log(data);
             console.log(`successfully updated ${email}`);
         } catch (error) {
@@ -45,6 +56,7 @@ const useUpdateProfile = () => {
     }
     return {
         handleUpdateProfile,
+        updatedFields,
         isLoading,
         isInvalidUpdate,
     };

@@ -1,3 +1,5 @@
+// Code editor referenced from https://github.com/SAMUDRALAARAVIND/code_deck/blob/main/src/screens/Playground/CodeEditor.jsx 
+
 import React, { useState, useEffect } from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 
