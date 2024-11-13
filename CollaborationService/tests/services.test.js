@@ -1,4 +1,4 @@
-// __tests__/roomService.test.js
+// __tests__/roomService.tests.js
 import { jest } from '@jest/globals';
 import roomService from '../services/roomService.js';
 import Room from '../models/room-model.js';
