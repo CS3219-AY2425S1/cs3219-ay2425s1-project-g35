@@ -6,7 +6,7 @@ const redisClient = createRedisConnection();
 async function createRoom(roomId, user1, user2, topic, difficulty) {
     let question;
     try {
-        const response = await fetch(`http://question-service:3000/question/random?&difficulty=${difficulty}`, {
+        const response = await fetch(`http://question-service:3000/question/random?topic=${topic}&difficulty=${difficulty}`, {
             method: 'GET',
         });
 
@@ -40,7 +40,7 @@ async function createRoom(roomId, user1, user2, topic, difficulty) {
     await redisClient.hSet(`room:${roomId}`, {
         users: JSON.stringify(room.users),
         question: JSON.stringify(room.question),
-        documentContent: room.documentContent,
+        documentContent: JSON.stringify(room.documentContent),
         language: room.language,
         cursors: JSON.stringify(room.cursors),
     });
@@ -62,18 +62,22 @@ async function getRoom(roomId) {
         JSON.parse(roomData.users)[1], // Second user
         JSON.parse(roomData.question)
     );
-    room.documentContent = roomData.documentContent;
+    room.documentContent = JSON.parse(roomData.documentContent);
     room.language = roomData.language;
     room.cursors = JSON.parse(roomData.cursors);
-
-    console.log('documentContent from Redis:', roomData.documentContent);
 
     return room;
 }
 
-async function updateContent(roomId, content) {
-    await redisClient.hSet(`room:${roomId}`, 'documentContent', content); 
-    console.log('documentContent updated in Redis:', content);
+async function updateContent(roomId, language, content) {
+    const roomData = await getRoom(roomId);
+    if (roomData) {
+        roomData.documentContent[language] = content;
+        await redisClient.hSet(`room:${roomId}`, 'documentContent', JSON.stringify(roomData.documentContent));
+        console.log(`documentContent for ${language} updated in Redis:`, content);
+    } else {
+        console.error(`Room ${roomId} not found for updating content.`);
+    }
 }
 
 async function updateLanguage(roomId, language) {

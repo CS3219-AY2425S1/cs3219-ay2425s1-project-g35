@@ -163,10 +163,21 @@ services:
   chat-service:
     build: ./ChatService
     container_name: ChatService
+    depends_on:
+     - redis-chat
     ports:
       - "3003"
     networks:
       - app-network
+
+  redis-chat:
+    image: redis:alpine
+    container_name: redis-chat
+    ports:
+      - "6379" 
+    networks:
+      - app-network
+
 
   # Frontend
   frontend:

@@ -26,7 +26,14 @@ const CollaborationPage = () => {
         'python': '3.10.0'
     }
 
-    const [content, setContent] = useState(templateMap['javascript']); // actual content to be displayed
+    // State to store each language's content
+    const [content, setContent] = useState({
+        javascript: templateMap['javascript'],
+        python: templateMap['python'],
+        cpp: templateMap['cpp'],
+        java: templateMap['java']
+    });
+
     const [cookies] = useCookies(["username", "accessToken", "userId"]);
     const { roomId } = useParams();
     const [question, setQuestion] = useState(null);
@@ -35,9 +42,10 @@ const CollaborationPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [partnerUsername, setPartnerUsername] = useState('');
     const [isConnected, setIsConnected] = useState(false);
-    const [language, setLanguage] = useState("javascript");
+    const [language, setLanguage] = useState(localStorage.getItem('selectedLanguage') || 'javascript');
     const [theme, setTheme] = useState("githubLight");
     const [executionResult, setExecutionResult] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const { handleHistoryUpdate, isLoading: isHistoryLoading, isError: isHistoryError } = useHistoryUpdate();
 
@@ -48,50 +56,40 @@ const CollaborationPage = () => {
 
     useEffect(() => {
         const userId = cookies.userId;
-        socketRef.current = io(VITE_COLLABORATION_SERVICE_API, { 
+        socketRef.current = io(VITE_COLLABORATION_SERVICE_API, {
             query: { userId },
-            reconnection: true,        
-            reconnectionAttempts: 3,    
-            reconnectionDelay: 2000,       
-            reconnectionDelayMax: 10000,   
-            timeout: 20000,                
+            reconnection: true,
+            reconnectionAttempts: 3,
+            reconnectionDelay: 2000,
+            reconnectionDelayMax: 10000,
+            timeout: 20000,
         });
-        
+
         console.log('Connecting to the collaboration service server socket');
 
-        //const joinedState = localStorage.getItem(`joined-${roomId}`) === 'true';
-
-    
         console.log('Emitting joinRoom');
         socketRef.current.emit('joinRoom', { roomId });
-        //localStorage.setItem(`joined-${roomId}`, 'true');
         console.log('Emitting first_username');
         socketRef.current.emit('first_username', { roomId, username: cookies.username });
-        
 
         socketRef.current.on('collaboration_ready', (data) => {
             setQuestion(data.question);
             setQuestionTitle(data.question["Question Title"]);
-            setQuestionContent(data.question["Question Description"])
+            setQuestionContent(data.question["Question Description"]);
             setIsLoading(false);
             console.log('collaboration_ready event received');
-            // // console.log('Emitting joinRoom');
-            // // socketRef.current.emit('joinRoom', { roomId });
-            // // localStorage.setItem(`joined-${roomId}`, 'true');
-            console.log('Emitting first_username');
             socketRef.current.emit('first_username', { roomId, username: cookies.username });
-        
         });
 
         socketRef.current.on('load_room_content', (data) => {
             setQuestion(data.question);
             setQuestionTitle(data.question["Question Title"]);
-            setQuestionContent(data.question["Question Description"])
+            setQuestionContent(data.question["Question Description"]);
             setContent(data.documentContent);
+
             setIsLoading(false);
             console.log('load_room_content event received');
             socketRef.current.emit('first_username', { roomId, username: cookies.username });
-
         });
 
         socketRef.current.on('first_username', (data) => {
@@ -109,19 +107,20 @@ const CollaborationPage = () => {
         });
 
         socketRef.current.on('documentUpdate', (data) => {
-            console.log('documentUpdate event received: ', data.content);
-            setContent(data.content);
+            console.log(`documentUpdate event received for language: ${data.language}`);
+            setContent((prevContent) => ({ ...prevContent, [data.language]: data.content }));
         });
 
         socketRef.current.on('languageUpdate', (data) => {
-            console.log('languageUpdate event received: ', data.language);
+            console.log(`languageUpdate event received: ${data.language}`);
             setLanguage(data.language);
+            setContent((prevContent) => ({ ...prevContent, [data.language]: data.content }));
         });
 
         socketRef.current.on('reconnect_attempt', (attempt) => {
             console.log(`Attempting to reconnect... (${attempt})`);
         });
-    
+
         socketRef.current.on('reconnect_failed', () => {
             console.error('Reconnection attempts failed');
             alert('Unable to reconnect to the server');
@@ -142,14 +141,18 @@ const CollaborationPage = () => {
     useEffect(() => {
         const interval = setTimeout(() => {
             console.log('Saving codeSnippet to localStorage');
-            localStorage.setItem(`codeSnippet-${language}`, content);
-            handleUpdateHistoryNow(language, content);
+            localStorage.setItem(`codeSnippet-${language}`, content[language]);
+            handleUpdateHistoryNow(language, content[language]);
         }, 2000);
         return () => clearTimeout(interval);
     }, [content, language]);
 
+    useEffect(() => {
+        localStorage.setItem('selectedLanguage', language);
+    }, [language]);
+
     const handleUpdateHistoryNow = async (lang, code) => {
-        console.log(`handleUpdateHistoryNow`)
+        console.log(`handleUpdateHistoryNow`);
         try {
             await handleHistoryUpdate(cookies.userId, roomId, questionTitle, questionContent, lang, code);
             console.log('History update completed.');
@@ -159,36 +162,37 @@ const CollaborationPage = () => {
     };
 
     const handleEditorChange = (newContent) => {
-        //setContent(newContent);
-        console.log('Emitting editDocument with new content: ', newContent);
-        socketRef.current.emit('editDocument', { roomId, content: newContent });
+        console.log(`Emitting editDocument with new content for language: ${language}`);
+        setContent((prevContent) => ({ ...prevContent, [language]: newContent }));
+        socketRef.current.emit('editDocument', { roomId, language, content: newContent });
     };
 
     const handleLeave = () => {
-        handleUpdateHistoryNow(language, content);
-        
+        handleUpdateHistoryNow(language, content[language]);
+
         const username = cookies.username;
         console.log('Emitting custom_disconnect before navigating away');
         localStorage.clear();
-        
+
         socketRef.current.emit('custom_disconnect', { roomId, username }, () => {
-            // Callback to ensure custom_disconnect is sent before disconnecting
             console.log('custom_disconnect acknowledged by server. Now disconnecting and navigating away.');
             navigate('/', { replace: true });
             socketRef.current.disconnect();
         });
     };
-    
-    
+
     const handleLanguageChange = (newLanguage) => {
-        const selectedLanguage = newLanguage.target.value
+        const selectedLanguage = newLanguage.target.value;
         setLanguage(selectedLanguage);
 
-        const savedSnippet = localStorage.getItem(`codeSnippet-${selectedLanguage}`) || templateMap[String(selectedLanguage)];
+        // const savedSnippet = localStorage.getItem(`codeSnippet-${selectedLanguage}`) || content[selectedLanguage];
+        const savedSnippet = content[selectedLanguage] || localStorage.getItem(`codeSnippet-${selectedLanguage}`);
 
-        console.log('Language change: ', selectedLanguage);
+        setContent((prevContent) => ({ ...prevContent, [selectedLanguage]: savedSnippet }));
+
+
+        console.log('Language change to:', selectedLanguage);
         socketRef.current.emit('editLanguage', { roomId, language: selectedLanguage });
-        socketRef.current.emit('editDocument', { roomId, content: savedSnippet });
     }
 
     const handleThemeChange = (newTheme) => {
@@ -196,6 +200,7 @@ const CollaborationPage = () => {
     }
 
     const handleExecuteCode = async () => {
+        setLoading(true);
         try {
             const apiEndpoint = 'https://emkc.org/api/v2/piston/execute';
             const response = await fetch(apiEndpoint, {
@@ -206,64 +211,68 @@ const CollaborationPage = () => {
                     "version": versionMap[String(language)],
                     "files": [
                         {
-                            "content": content
+                            "content": content[language]
                         }
                     ],
                 })
             });
-            
+
             const result = await response.json();
             if (result) {
-                if (result.run.stdout) {
-                    setExecutionResult(result.run.stdout);
-                } else {
-                    setExecutionResult(result.run.stderr);
-                }
+                setExecutionResult(result.run.stdout || result.run.stderr);
             } else {
                 setExecutionResult("No response received");
             }
         } catch (error) {
             console.error("Execution error:", error);
             setExecutionResult(String(error));
+        } finally {
+            setLoading(false);
         }
     };
 
     const handleResetCode = async () => {
-        setContent(templateMap[String(language)]);
-        socketRef.current.emit('editDocument', { roomId, content: templateMap[String(language)] });
+        setContent((prevContent) => ({
+            ...prevContent,
+            [language]: templateMap[language]
+        }));
+        socketRef.current.emit('editDocument', { roomId, language, content: templateMap[language] });
     };
-      
+
     return (
         <div className={styles.CollaborationContainer}>
             {isLoading ? (
                 <p>Loading...</p>
             ) : (
                 <>
-                    
                     <div className={styles.editorContainer}>
-                        <div className={styles.toolbar}>
-                            <select value={language} onChange={handleLanguageChange}>
-                                <option value="javascript">JavaScript</option>
-                                <option value="python">Python</option>
-                                <option value="java">Java</option>
-                                <option value="cpp">C++</option>
-                            </select>
+                        <div className={styles.codeContainer}>
+                            <div className={styles.toolbar}>
+                                <select value={language} onChange={handleLanguageChange} className={styles.dropdown}>
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="python">Python</option>
+                                    <option value="java">Java</option>
+                                    <option value="cpp">C++</option>
+                                </select>
 
-                            <select value={theme} onChange={handleThemeChange}>
-                                <option value="githubLight">Light</option>
-                                <option value="githubDark">Dark</option>
-                            </select>
+                                <select value={theme} onChange={handleThemeChange} className={styles.dropdown}>
+                                    <option value="githubLight">Light</option>
+                                    <option value="githubDark">Dark</option>
+                                </select>
+                            </div>
+                            <div className={styles.codeBox}>
+                                <CodeEditor
+                                    currentLanguage={language}
+                                    currentTheme={theme}
+                                    currentCode={content[language]}
+                                    setCurrentCode={handleEditorChange}
+                                />
+                            </div>
+
                         </div>
 
-                        <CodeEditor
-                            currentLanguage={language}
-                            currentTheme={theme}
-                            currentCode={content}
-                            setCurrentCode={handleEditorChange}
-                        />
-
                         <div className={styles.codeButtons}>
-                            <button onClick={handleExecuteCode} className={styles.runCodeButton}>Run Code</button>
+                            <button onClick={handleExecuteCode} className={styles.runCodeButton} disabled={loading}>{loading ? "Running..." : "Run Code"}</button>
                             <button onClick={handleResetCode} className={styles.resetButton}>Reset</button>
                         </div>
                         <p className={styles.outputBox}><b>Output:</b> {executionResult}</p>
@@ -289,7 +298,7 @@ const CollaborationPage = () => {
                             <Chat className={styles.Chat} roomId={roomId} />
                         </div>
                     </div>
-                    
+
                 </>
             )}
         </div>

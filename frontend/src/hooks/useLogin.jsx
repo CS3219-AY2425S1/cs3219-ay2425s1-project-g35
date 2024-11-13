@@ -5,7 +5,7 @@ import { useCookies } from 'react-cookie';
 const useLogin = () => {
     const [isLoading, setLoading] = useState(false);
     const [isInvalidLogin, setIsInvalidLogin] = useState(false);
-    const [cookies, setCookie] = useCookies([ "username", "accessToken", "userId" ]);
+    const [cookies, setCookie] = useCookies([ "username", "accessToken", "userId", "email" ]);
     const navigate = useNavigate();
 
     const VITE_USER_SERVICE_API = import.meta.env.VITE_USER_SERVICE_API || 'http://localhost/api/users';
@@ -33,6 +33,7 @@ const useLogin = () => {
             setCookie( "accessToken", data["data"]["accessToken"], { path: '/' } );
             setCookie( "userId", data["data"]["id"], { path: '/' } );
             setCookie( "username", data["data"]["username"], { path: '/' } );
+            setCookie( "email", email, { path: '/' } );
             navigate("/", { replace: true} );
         } catch (error) {
             setIsInvalidLogin(true);

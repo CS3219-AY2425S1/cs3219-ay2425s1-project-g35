@@ -11,12 +11,12 @@ const ProfilePage = () => {
     const [expandedSessionId, setExpandedSessionId] = useState(null);
     const [codeSnippet, setCodeSnippet] = useState(null);
     const [sessionMap, setSessionMap] = useState(new Map());
-    const [cookies] = useCookies(["username", "accessToken", "userId"]);
+    const [cookies] = useCookies(["username", "accessToken", "userId", "email"]);
     const [activeLanguage, setActiveLanguage] = useState(null);
 
-    const [newUsername, setNewUsername] = useState('');
-    const [newEmail, setNewEmail] = useState('');
-    const [newPassword, setNewPassword] = useState('');
+    const [newUsername, setNewUsername] = useState(null);
+    const [newEmail, setNewEmail] = useState(null);
+    const [newPassword, setNewPassword] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [message, setMessage] = useState('');
 
@@ -31,27 +31,35 @@ const ProfilePage = () => {
         isLoading
     } = useProfile(cookies.userId);
 
-    useEffect(() => {
-        setNewUsername(username);
-        setNewEmail(email);
-    }, [username, email]);
-
-    const { handleUpdateProfile, isLoading: isUpdating, isInvalidUpdate } = useUpdateProfile();
+    const { 
+        handleUpdateProfile, 
+        updatedFields,
+        isLoading: isUpdating, 
+        isInvalidUpdate 
+    } = useUpdateProfile();
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
-        if (newUsername == '' && newEmail == '' && newPassword == '') {
+        if (!newUsername && !newEmail && !newPassword) {
             setMessage('Please fill in at least one field');
+            return;
+        }
+        if (newPassword && newPassword.length < 8) {
+            setMessage('Password must be at least 8 characters long.');
+            return;
+        }
+        if (newUsername && newUsername === cookies.username) {
+            setMessage('Username is the same as current.');
+            return;
+        }
+        if (newEmail && newEmail === cookies.email) {
+            setMessage('Email is the same as current.');
             return;
         }
 
         await handleUpdateProfile(newUsername, newEmail, newPassword);
         if (!isInvalidUpdate) {
-            setMessage('Profile updated successfully');
-            setIsEditing(false);
-            setNewUsername('');
-            setNewEmail('');
-            setNewPassword('');
+            setMessage(`Profile updated successfully. Updated fields: ${updatedFields.join(", ")}`);
         } else {
             setMessage('Failed to update profile');
         }
@@ -104,13 +112,13 @@ const ProfilePage = () => {
                 <div className={styles.profileHeader}>
                     <div className={styles.userDetails}>
                         <h2>Welcome back!</h2>
-                        <p>@{username}</p>
+                        <p>@{cookies.username}</p>
                     </div>
                 </div>
                 <div className={styles.profileInfo}>
                     <div className={styles.infoBlock}>
                         <p>Email</p>
-                        <strong>{email}</strong>
+                        <strong>{cookies.email}</strong>
                     </div>
                     <div className={styles.infoBlock}>
                         <p>Questions Answered</p>
@@ -134,6 +142,7 @@ const ProfilePage = () => {
                         <label>Username</label>
                         <input
                             type="text"
+                            placeholder="Enter new username"
                             value={newUsername}
                             onChange={(e) => setNewUsername(e.target.value)}
                         />
@@ -142,6 +151,7 @@ const ProfilePage = () => {
                         <label>Email</label>
                         <input
                             type="email"
+                            placeholder="Enter new email"
                             value={newEmail}
                             onChange={(e) => setNewEmail(e.target.value)}
                         />

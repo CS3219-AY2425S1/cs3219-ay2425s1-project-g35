@@ -24,6 +24,7 @@ nav {
 
 .navButton {
     background-color: white;
+    font-family: inherit;
     color: black;
     margin-right: 10px;
     border-radius: 10px;
