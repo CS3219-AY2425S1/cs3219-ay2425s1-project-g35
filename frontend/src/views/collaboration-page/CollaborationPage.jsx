@@ -53,13 +53,13 @@ const CollaborationPage = () => {
 
         //const joinedState = localStorage.getItem(`joined-${roomId}`) === 'true';
 
-    
+
         console.log('Emitting joinRoom');
         socketRef.current.emit('joinRoom', { roomId });
         //localStorage.setItem(`joined-${roomId}`, 'true');
         console.log('Emitting first_username');
         socketRef.current.emit('first_username', { roomId, username: cookies.username });
-        
+
 
         socketRef.current.on('collaboration_ready', (data) => {
             setQuestion(data.question);
@@ -72,7 +72,7 @@ const CollaborationPage = () => {
             // // localStorage.setItem(`joined-${roomId}`, 'true');
             console.log('Emitting first_username');
             socketRef.current.emit('first_username', { roomId, username: cookies.username });
-        
+
         });
 
         socketRef.current.on('load_room_content', (data) => {
@@ -149,11 +149,11 @@ const CollaborationPage = () => {
 
     const handleLeave = () => {
         handleUpdateHistoryNow(language, content);
-        
+
         const username = cookies.username;
         console.log('Emitting custom_disconnect before navigating away');
         localStorage.clear();
-        
+
         socketRef.current.emit('custom_disconnect', { roomId, username }, () => {
             // Callback to ensure custom_disconnect is sent before disconnecting
             console.log('custom_disconnect acknowledged by server. Now disconnecting and navigating away.');
@@ -161,8 +161,8 @@ const CollaborationPage = () => {
             socketRef.current.disconnect();
         });
     };
-    
-    
+
+
     const handleLanguageChange = (newLanguage) => {
         const selectedLanguage = newLanguage.target.value
         setLanguage(selectedLanguage);
@@ -194,7 +194,7 @@ const CollaborationPage = () => {
                     ],
                 })
             });
-            
+
             const result = await response.json();
             if (result) {
                 if (result.run.stdout) {
@@ -215,35 +215,39 @@ const CollaborationPage = () => {
         setContent(templateMap[String(language)]);
         socketRef.current.emit('editDocument', { roomId, content: templateMap[String(language)] });
     };
-      
+
     return (
         <div className={styles.CollaborationContainer}>
             {isLoading ? (
                 <p>Loading...</p>
             ) : (
                 <>
-                    
+
                     <div className={styles.editorContainer}>
-                        <div className={styles.toolbar}>
-                            <select value={language} onChange={handleLanguageChange}>
-                                <option value="javascript">JavaScript</option>
-                                <option value="python">Python</option>
-                                <option value="java">Java</option>
-                                <option value="cpp">C++</option>
-                            </select>
+                        <div className={styles.codeContainer}>
+                            <div className={styles.toolbar}>
+                                <select value={language} onChange={handleLanguageChange} className={styles.dropdown}>
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="python">Python</option>
+                                    <option value="java">Java</option>
+                                    <option value="cpp">C++</option>
+                                </select>
 
-                            <select value={theme} onChange={handleThemeChange}>
-                                <option value="githubLight">Light</option>
-                                <option value="githubDark">Dark</option>
-                            </select>
+                                <select value={theme} onChange={handleThemeChange} className={styles.dropdown}>
+                                    <option value="githubLight">Light</option>
+                                    <option value="githubDark">Dark</option>
+                                </select>
+                            </div>
+                            <div className={styles.codeBox}>
+                                <CodeEditor
+                                    currentLanguage={language}
+                                    currentTheme={theme}
+                                    currentCode={content}
+                                    setCurrentCode={handleEditorChange}
+                                />
+                            </div>
+
                         </div>
-
-                        <CodeEditor
-                            currentLanguage={language}
-                            currentTheme={theme}
-                            currentCode={content}
-                            setCurrentCode={handleEditorChange}
-                        />
 
                         <div className={styles.codeButtons}>
                             <button onClick={handleExecuteCode} className={styles.runCodeButton}>Run Code</button>
@@ -272,7 +276,7 @@ const CollaborationPage = () => {
                             <Chat className={styles.Chat} roomId={roomId} />
                         </div>
                     </div>
-                    
+
                 </>
             )}
         </div>

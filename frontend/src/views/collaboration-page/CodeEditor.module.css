@@ -1,0 +1,11 @@
+.codeMirrorEditorDark {
+    background-color: #0d1116;
+    height: fit-content;
+    overflow: auto;
+}
+
+.codeMirrorEditorLight {
+    background-color: white;
+    height: fit-content;
+    overflow: auto; 
+}
