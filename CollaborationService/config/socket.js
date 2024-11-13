@@ -20,7 +20,7 @@ function createSocket(io) {
                 socket.emit('load_room_content', { 
                     question: room.question,
                     documentContent: room.documentContent,
-                    cursors: room.cursors
+                    cursors: room.cursors,
                 });
             } else {
                 console.error(`Room ${roomId} not found for user ${socket.id}`);

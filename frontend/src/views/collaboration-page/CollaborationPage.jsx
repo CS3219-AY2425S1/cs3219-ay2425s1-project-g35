@@ -45,6 +45,7 @@ const CollaborationPage = () => {
     const [language, setLanguage] = useState(localStorage.getItem('selectedLanguage') || 'javascript');
     const [theme, setTheme] = useState("githubLight");
     const [executionResult, setExecutionResult] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const { handleHistoryUpdate, isLoading: isHistoryLoading, isError: isHistoryError } = useHistoryUpdate();
 
@@ -85,6 +86,7 @@ const CollaborationPage = () => {
             setQuestionTitle(data.question["Question Title"]);
             setQuestionContent(data.question["Question Description"]);
             setContent(data.documentContent);
+
             setIsLoading(false);
             console.log('load_room_content event received');
             socketRef.current.emit('first_username', { roomId, username: cookies.username });
@@ -186,6 +188,7 @@ const CollaborationPage = () => {
         const savedSnippet = localStorage.getItem(`codeSnippet-${selectedLanguage}`) || content[selectedLanguage];
         setContent((prevContent) => ({ ...prevContent, [selectedLanguage]: savedSnippet }));
 
+
         console.log('Language change to:', selectedLanguage);
         socketRef.current.emit('editLanguage', { roomId, language: selectedLanguage });
     }
@@ -195,6 +198,7 @@ const CollaborationPage = () => {
     }
 
     const handleExecuteCode = async () => {
+        setLoading(true);
         try {
             const apiEndpoint = 'https://emkc.org/api/v2/piston/execute';
             const response = await fetch(apiEndpoint, {
@@ -213,17 +217,15 @@ const CollaborationPage = () => {
             
             const result = await response.json();
             if (result) {
-                if (result.run.stdout) {
-                    setExecutionResult(result.run.stdout);
-                } else {
-                    setExecutionResult(result.run.stderr);
-                }
+                setExecutionResult(result.run.stdout || result.run.stderr);
             } else {
                 setExecutionResult("No response received");
             }
         } catch (error) {
             console.error("Execution error:", error);
             setExecutionResult(String(error));
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -264,7 +266,7 @@ const CollaborationPage = () => {
                         />
 
                         <div className={styles.codeButtons}>
-                            <button onClick={handleExecuteCode} className={styles.runCodeButton}>Run Code</button>
+                            <button onClick={handleExecuteCode} className={styles.runCodeButton} disabled={loading}>{loading ? "Running..." : "Run Code"}</button>
                             <button onClick={handleResetCode} className={styles.resetButton}>Reset</button>
                         </div>
                         <p className={styles.outputBox}><b>Output:</b> {executionResult}</p>
