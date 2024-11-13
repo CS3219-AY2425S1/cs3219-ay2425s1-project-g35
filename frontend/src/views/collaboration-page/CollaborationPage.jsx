@@ -42,7 +42,7 @@ const CollaborationPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [partnerUsername, setPartnerUsername] = useState('');
     const [isConnected, setIsConnected] = useState(false);
-    const [language, setLanguage] = useState("javascript");
+    const [language, setLanguage] = useState(localStorage.getItem('selectedLanguage') || 'javascript');
     const [theme, setTheme] = useState("githubLight");
     const [executionResult, setExecutionResult] = useState('');
 
@@ -71,7 +71,6 @@ const CollaborationPage = () => {
         console.log('Emitting first_username');
         socketRef.current.emit('first_username', { roomId, username: cookies.username });
         
-
         socketRef.current.on('collaboration_ready', (data) => {
             setQuestion(data.question);
             setQuestionTitle(data.question["Question Title"]);
@@ -145,6 +144,10 @@ const CollaborationPage = () => {
         }, 2000);
         return () => clearTimeout(interval);
     }, [content, language]);
+
+    useEffect(() => {
+        localStorage.setItem('selectedLanguage', language);
+    }, [language]);
 
     const handleUpdateHistoryNow = async (lang, code) => {
         console.log(`handleUpdateHistoryNow`);
