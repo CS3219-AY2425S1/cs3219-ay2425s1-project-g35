@@ -1,0 +1,156 @@
+.matchingPage {
+    display: flex;
+    font-family: inherit;
+    flex-direction: row;
+    width: 100vw;
+    height: calc(100vh - 75px);
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+}
+
+.leftSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #1F2833;
+}
+
+.matchingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    color: white;
+    padding: 40px;
+}
+
+.rightSection {
+    flex: 1;
+    background-color: #0B0C10;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    padding: 40px;
+}
+
+.heading {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.difficultySection {
+    margin-bottom: 20px;
+    width: 100%
+}
+
+button {
+    border: none;
+}
+
+.topicButton {
+    font-family: inherit;
+    border-radius: 20px;
+    transform-origin: center;
+    transition: all 0.3s ease;
+    padding: 8px 12px;
+    cursor: pointer;
+    margin: 5px;
+    margin-right: 10px;
+}
+
+.topicButton:not(:disabled):hover, .difficultyButton:not(:disabled):hover {
+    border-color: #7440cf;
+    background-color: #c9b6ed;
+    transform : scale(1.1);
+}
+
+.difficultyButtons {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+}
+
+.difficultyButton {
+    font-family: inherit;
+    flex: 1; 
+    padding: 10px 20px; 
+    border-radius: 20px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.3s ease ;
+    text-align: center;
+}
+
+.difficultyButton.notSelected {
+    color: black;
+}
+
+.difficultyButton.selectedEasy {
+    background-color: #86e49d;
+    color: #006b21;
+}
+
+.difficultyButton.selectedMedium {
+    background-color: #ebc474;
+    color: #a28017;
+}
+
+.difficultyButton.selectedHard {
+    background-color: #d893a3;
+    color: #b30021;
+}
+
+/* Topics selection section */
+.topicsSection {
+    margin-bottom: 30px;
+}
+
+.topicsContainer {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, 1fr);
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+
+.topicButton.topicNotSelected {
+    color: black;
+}
+
+.topicButton.topicSelected {
+    background-color: #a989e3;
+    border-color: #7440cf;
+}
+
+.findMatchButton {
+    font-family: inherit;
+    padding: 15px 30px;
+    margin-bottom: 20px;
+    border-radius: 20px;
+    width: 100%;
+    background-color: #66FCF1;
+    color: black;
+    font-size: 1.2rem;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.findMatchButton:hover {
+    background-color: #45A29E;
+}
+
+.findMatchButtonDisabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}

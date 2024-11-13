@@ -1,0 +1,46 @@
+nav {
+    display: flex;
+    background-color: white;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    height: 75px;
+    padding: 0 25px;
+    width: 100%;
+    margin: 0;
+}
+
+.navContent {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; 
+}
+
+.navBrand {
+    font-size: 2rem; 
+    font-weight: bold;
+    color: #253df1f0;
+}
+
+.navButton {
+    background-color: white;
+    font-family: inherit;
+    color: black;
+    margin-right: 10px;
+    border-radius: 10px;
+    padding: 10px 15px;
+}
+
+.navContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.navContainer div {
+    text-align: center;
+}
+
+.username {
+    padding: 0 35px;
+}

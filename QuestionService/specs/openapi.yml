@@ -1,0 +1,255 @@
+openapi: 3.0.0
+info:
+  title: Question Service API
+  description: API for managing and retrieving coding questions.
+  version: 1.0.0
+
+paths:
+  /question:
+    get:
+      summary: Fetch a single question by ID
+      tags:
+        - Questions
+      parameters:
+        - in: query
+          name: questionId
+          schema:
+            type: integer
+          required: true
+          description: The ID of the question to fetch
+      responses:
+        200:
+          description: A single question from the database
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Question'
+        400:
+          description: Invalid Question ID or Question Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid Question ID or Question Not Found"
+        500:
+          description: Server error
+    post:
+      summary: Add a new question
+      tags:
+        - Questions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewQuestion'
+      responses:
+        201:
+          description: Question added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        400:
+          description: Invalid Body or Duplicate Question
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid Body or Question already exists"
+        500:
+          description: Server error
+
+  /questions:
+    get:
+      summary: Fetch multiple questions based on filters
+      tags:
+        - Questions
+      parameters:
+        - in: query
+          name: topic
+          schema:
+            type: string
+          required: false
+          description: Filter questions by topic
+        - in: query
+          name: difficulty
+          schema:
+            type: string
+            enum: [Easy, Medium, Hard]
+          required: false
+          description: Filter questions by difficulty
+      responses:
+        200:
+          description: A list of questions that match the filters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Question'
+        500:
+          description: Server error
+
+
+
+  /question/{questionId}:
+    delete:
+      summary: Delete a question by ID
+      tags:
+        - Questions
+      parameters:
+        - in: path
+          name: questionId
+          schema:
+            type: integer
+          required: true
+          description: The ID of the question to delete
+      responses:
+        200:
+          description: Successfully deleted the question
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        400:
+          description: Invalid Question ID or Question Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid Question ID or Question Not Found"
+        500:
+          description: Server error
+
+    patch:
+      summary: Update a question by ID
+      tags:
+        - Questions
+      parameters:
+        - in: path
+          name: questionId
+          schema:
+            type: integer
+          required: true
+          description: The ID of the question to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewQuestion'
+      responses:
+        200:
+          description: Question updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+        400:
+          description: Invalid Body, Invalid Question ID, or Question already exists
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid Body or Question already exists"
+        500:
+          description: Server error
+
+components:
+  schemas:
+    Question:
+      type: object
+      properties:
+        "Question ID":
+          type: integer
+          example: 2
+        "Question Title":
+          type: string
+          example: "Linked List Cycle Detection"
+        "Question Description":
+          type: string
+          example: "Implement a function to detect if a linked list contains a cycle."
+        "Question Categories":
+          type: array
+          items:
+            type: string
+          example: ["Data Structures", "Algorithms"]
+        "Question Complexity":
+          type: string
+          example: "Easy"
+        "Link":
+          type: string
+          format: uri
+          example: "https://leetcode.com/problems/linked-list-cycle/"
+
+    NewQuestion:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 3
+        name:
+          type: string
+          example: "Binary Tree Traversal"
+        description:
+          type: string
+          example: "Implement a function to perform in-order traversal of a binary tree."
+        topics:
+          type: array
+          items:
+            type: string
+          example: ["Data Structures", "Algorithms"]
+        leetcode_link:
+          type: string
+          format: uri
+          example: "https://leetcode.com/problems/binary-tree-inorder-traversal/"
+        difficulty:
+          type: string
+          example: "Medium"
+
+  responses:
+    InvalidQuestionID:
+      description: Invalid Question ID provided
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: "Invalid Question ID"
+    ServerError:
+      description: A server error occurred.
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: accessToken
+
+security:
+  - cookieAuth: []

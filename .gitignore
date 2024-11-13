@@ -1,0 +1,5 @@
+.idea
+.vscode
+node_modules
+k8s/k8s_deploy.sh
+coverage
