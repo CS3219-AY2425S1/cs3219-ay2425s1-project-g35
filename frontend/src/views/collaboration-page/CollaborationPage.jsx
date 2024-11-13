@@ -185,7 +185,9 @@ const CollaborationPage = () => {
         const selectedLanguage = newLanguage.target.value;
         setLanguage(selectedLanguage);
 
-        const savedSnippet = localStorage.getItem(`codeSnippet-${selectedLanguage}`) || content[selectedLanguage];
+        // const savedSnippet = localStorage.getItem(`codeSnippet-${selectedLanguage}`) || content[selectedLanguage];
+        const savedSnippet = content[selectedLanguage] || localStorage.getItem(`codeSnippet-${selectedLanguage}`);
+
         setContent((prevContent) => ({ ...prevContent, [selectedLanguage]: savedSnippet }));
 
 
