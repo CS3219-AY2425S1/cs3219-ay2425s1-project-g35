@@ -1,5 +1,11 @@
 import matchQueueService from '../services/queueService.js';
-
+jest.mock('../config/redis.js', () => {
+    const redisMock = require('redis-mock');
+    return {
+        __esModule: true,
+        default: () => redisMock.createClient(),
+    };
+});
 // Sample message to test the queues
 const testMessage = {
     userId: 'user123',

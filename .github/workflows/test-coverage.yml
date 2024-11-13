@@ -1,0 +1,71 @@
+name: Test Coverage
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service: [ChatService, QuestionService, UserService/user-service, CollaborationService, MatchingService]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./${{ matrix.service }}
+
+      - name: Run test coverage
+        run: npm run test:coverage
+        working-directory: ./${{ matrix.service }}
+
+      - name: Set sanitized service name
+        run: echo "SANITIZED_SERVICE_NAME=${{ matrix.service }}" | sed 's|/|_|g' >> $GITHUB_ENV
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+           name: ${{ env.SANITIZED_SERVICE_NAME }}-coverage
+           path: ./${{ matrix.service }}/coverage/
+
+#  merge-coverage:
+#      runs-on: ubuntu-latest
+#      needs: test
+#      steps:
+#        - name: Checkout repository
+#          uses: actions/checkout@v4
+#
+#        - name: Download lcov reports
+#          uses: actions/download-artifact@v4
+#          with:
+#            path: ./coverage-reports
+#
+#        - name: Install lcov
+#          run: sudo apt-get install -y lcov
+#
+#        - name: Merge lcov reports
+#          run: |
+#            mkdir -p coverage
+#            lcov -a ./coverage-reports/MatchingService-coverage/lcov.info -a ./coverage-reports/QuestionService-coverage/lcov.info -a ./coverage-reports/CollaborationService-coverage/lcov.info -a ./coverage-reports/UserService_user-service-coverage/lcov.info -a ./coverage-reports/ChatService-coverage/lcov.info -o coverage/merged-lcov.info
+#
+#        - name: Adjust lcov paths
+#          run: |
+#            # Replace absolute paths with relative paths
+#            lcov --remove coverage/merged-lcov.info '/usr/*' '/home/runner/*' --output-file coverage/merged-lcov.info
+#
+#        - name: Generate HTML report from merged lcov
+#          run: |
+#            genhtml coverage/merged-lcov.info --output-directory coverage
+#
+#        - name: Upload HTML report
+#          uses: actions/upload-artifact@v4
+#          with:
+#            name: html-coverage-report
+#            path: coverage
