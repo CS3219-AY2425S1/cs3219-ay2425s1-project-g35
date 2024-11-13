@@ -35,8 +35,8 @@ Deploy the complete application, including both the backend and frontend service
 1. Clone this repository:
 
    ```bash
-   git clone <repository-url>
-   cd <repository-folder>
+   git clone https://github.com/CS3219-AY2425S1/cs3219-ay2425s1-project-g35
+   cd cs3219-ay2425s1-project-g35
    ```
 
 2. Run the following command to deploy the entire application:
@@ -105,3 +105,14 @@ To ensure code quality, you can run integration tests using a dedicated Docker C
 Due to the way questions are seeded, if the earlier seeded questions are still in the mongo database, new questions with the same details/slightly changed details will be rejected.
 
 1. Run `docker compose down -v --remove-orphans`
+
+### 2. Ensure you down the docker compose project if you've made changes to nginx.conf
+
+If you've made changes to `nginx.conf`, you will need to bring down the project before rebuilding nginx.
+
+1. Run `docker compose down`
+2. Run `docker compose up -d --build`
+
+Alternatively, you can use `--force-recreate`
+
+1. You can also use `docker compose up -d --build --force-recreate` to ensure that Docker recreates the nginx container

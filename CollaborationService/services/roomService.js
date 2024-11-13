@@ -1,6 +1,7 @@
+import createRedisConnection from '../config/redis.js';
 import Room from '../models/room-model.js';
 
-const rooms = {}; 
+const redisClient = createRedisConnection();
 
 async function createRoom(roomId, user1, user2, topic, difficulty) {
     let question;
@@ -18,7 +19,7 @@ async function createRoom(roomId, user1, user2, topic, difficulty) {
             ],
             "Link": "https://leetcode.com/problems/longest-common-subsequence/",
             "Question Complexity": difficulty
-        }
+        };
 
         question = await response.json();
         
@@ -33,24 +34,64 @@ async function createRoom(roomId, user1, user2, topic, difficulty) {
         return null;
     }
     
-    rooms[roomId] = new Room(roomId, user1, user2, question);
-    return rooms[roomId];
+    const room = new Room(roomId, user1, user2, question);
+    
+    // Save room to Redis using the updated method names
+    await redisClient.hSet(`room:${roomId}`, {
+        users: JSON.stringify(room.users),
+        question: JSON.stringify(room.question),
+        documentContent: JSON.stringify(room.documentContent),
+        language: room.language,
+        cursors: JSON.stringify(room.cursors),
+    });
+
+    return room;
 }
 
-function getRoom(roomId) {
-    return rooms[roomId];
+async function getRoom(roomId) {
+    const roomData = await redisClient.hGetAll(`room:${roomId}`);
+
+    if (!roomData || Object.keys(roomData).length === 0) {
+        console.log(`Room data for ${roomId} is missing or empty.`);
+        return null;
+    }
+
+    const room = new Room(
+        roomId,
+        JSON.parse(roomData.users)[0], // First user
+        JSON.parse(roomData.users)[1], // Second user
+        JSON.parse(roomData.question)
+    );
+    room.documentContent = JSON.parse(roomData.documentContent);
+    room.language = roomData.language;
+    room.cursors = JSON.parse(roomData.cursors);
+
+    return room;
 }
 
-function updateContent(roomId, content) {
-    rooms[roomId].updateContent(content);
+async function updateContent(roomId, language, content) {
+    const roomData = await getRoom(roomId);
+    if (roomData) {
+        roomData.documentContent[language] = content;
+        await redisClient.hSet(`room:${roomId}`, 'documentContent', JSON.stringify(roomData.documentContent));
+        console.log(`documentContent for ${language} updated in Redis:`, content);
+    } else {
+        console.error(`Room ${roomId} not found for updating content.`);
+    }
 }
 
-function updateLanguage(roomId, language) {
-    rooms[roomId].updateLanguage(language);
+async function updateLanguage(roomId, language) {
+    await redisClient.hSet(`room:${roomId}`, 'language', language); 
 }
 
-function updateCursorPosition(roomId, userId, cursorPosition) {
-    rooms[roomId].updateCursorPosition(userId, cursorPosition);
+async function updateCursorPosition(roomId, userId, cursorPosition) {
+    const roomData = await getRoom(roomId);
+    if (roomData) {
+        roomData.cursors[userId] = cursorPosition;
+        await redisClient.hSet(`room:${roomId}`, 'cursors', JSON.stringify(roomData.cursors)); // Use hSet
+    } else {
+        console.error(`Room ${roomId} not found for updating cursor position`);
+    }
 }
 
 export default {
@@ -59,4 +100,4 @@ export default {
     updateContent,
     updateLanguage,
     updateCursorPosition
-}
+};

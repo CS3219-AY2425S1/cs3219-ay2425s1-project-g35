@@ -1,31 +1,58 @@
+import createRedisConnection from '../config/redis.js';
+
+const client = createRedisConnection();
+
 class Client {
-    constructor() {
-        this.clients = new Map();
-    }
-
-    addClient(userId, socketId) {
-        this.clients.set(userId, socketId);
-    }
-
-    removeClient(userId) {
-        this.clients.delete(userId);
-    }
-
-    getSocketId(userId) {
-        return this.clients.get(userId);
-    }
-
-    getUserIdBySocketId(socketId) {
-        for (const [userId, id] of this.clients.entries()) {
-            if (id === socketId) {
-                return userId;
-            }
+    async addClient(userId, socketId) {
+        try {
+            await client.hSet('clients', userId, socketId);
+        } catch (error) {
+            console.error('Error adding client to Redis:', error);
         }
-        return null;
     }
 
-    getAllClients() {
-        return Array.from(this.clients.entries());
+    async removeClient(userId) {
+        try {
+            const resolvedUserId = await userId;
+            await client.hDel('clients', resolvedUserId);
+        } catch (error) {
+            console.error('Error removing client from Redis:', error);
+        }
+    }
+
+    async getSocketId(userId) {
+        try {
+            const socketId = await client.hGet('clients', userId); 
+            return socketId;
+        } catch (error) {
+            console.error('Error retrieving socketId from Redis:', error);
+            return null;
+        }
+    }
+
+    async getUserIdBySocketId(socketId) {
+        try {
+            const clients = await client.hGetAll('clients');
+            for (const [userId, id] of Object.entries(clients)) {
+                if (id === socketId) {
+                    return userId;
+                }
+            }
+            return null;
+        } catch (error) {
+            console.error('Error retrieving userId by socketId from Redis:', error);
+            return null;
+        }
+    }
+
+    async getAllClients() {
+        try {
+            const clients = await client.hGetAll('clients');
+            return Object.entries(clients); 
+        } catch (error) {
+            console.error('Error retrieving all clients from Redis:', error);
+            return [];
+        }
     }
 }
 
