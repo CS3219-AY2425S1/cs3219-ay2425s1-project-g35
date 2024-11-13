@@ -271,11 +271,17 @@ const CollaborationPage = () => {
 
                         </div>
 
-                        <div className={styles.codeButtons}>
-                            <button onClick={handleExecuteCode} className={styles.runCodeButton} disabled={loading}>{loading ? "Running..." : "Run Code"}</button>
-                            <button onClick={handleResetCode} className={styles.resetButton}>Reset</button>
+                        <div className={styles.belowCodeEditor}>
+                            <div>
+                                <div>
+                                    <button onClick={handleExecuteCode} className={styles.runCodeButton} disabled={loading}>{loading ? "Running..." : "Run Code"}</button>
+                                </div>
+                                <div>
+                                    <button onClick={handleResetCode} className={styles.resetButton}>Reset</button>
+                                </div>
+                            </div>
+                            <p className={styles.outputBox}><b>Output:</b> {executionResult}</p>
                         </div>
-                        <p className={styles.outputBox}><b>Output:</b> {executionResult}</p>
                     </div>
 
                     <div className={styles.questionAreaContainer}>
