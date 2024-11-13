@@ -28,29 +28,32 @@ function createSocket(io) {
             }
         });
 
-        socket.on('editDocument', async ({ roomId, content }) => {
-            console.log(`User ${socket.id} editing document in room: ${roomId}`);
+        socket.on('editDocument', async ({ roomId, language, content }) => {
+            console.log(`User ${socket.id} editing ${language} document in room: ${roomId}`);
             const room = await getRoom(roomId);
             if (room) {
-                await updateContent(roomId, content);
-                console.log(`Updated document content in room ${roomId}. Broadcasting to all users in the room.`);
-                io.in(roomId).emit('documentUpdate', { content }); // Emits to all users in the room, including the sender
+                await updateContent(roomId, language, content);
+                console.log(`Updated ${language} document content in room ${roomId}. Broadcasting to all users in the room.`);
+                io.in(roomId).emit('documentUpdate', { content, language });
             } else {
                 console.error(`Failed to update document for room ${roomId} by user ${socket.id}. Room or content may be missing.`);
             }
         });
+        
 
         socket.on('editLanguage', async ({ roomId, language }) => {
-            console.log(`User ${socket.id} changed language in room: ${roomId}`);
+            console.log(`User ${socket.id} changed language to ${language} in room: ${roomId}`);
             const room = await getRoom(roomId);
             if (room) {
                 await updateLanguage(roomId, language);
-                console.log(`Updated language in room ${roomId}. Broadcasting to other users.`);
-                socket.to(roomId).emit('languageUpdate', { language });
+                console.log(`Updated language in room ${roomId}. Broadcasting selected language and content to other users.`);
+                const content = room.documentContent[language];
+                socket.to(roomId).emit('languageUpdate', { language, content });
             } else {
                 console.error(`Failed to update language for room ${roomId} by user ${socket.id}. Room or content may be missing.`);
             }
         });
+        
 
         socket.on('updateCursor', async ({ roomId, userId, cursorPosition }) => {
             console.log(`User ${socket.id} updating cursor position in room: ${roomId} for user ${userId}`);
