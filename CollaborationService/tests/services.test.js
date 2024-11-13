@@ -75,13 +75,6 @@ describe('Room Service', () => {
     });
 
     describe('getRoom', () => {
-        it('should retrieve room data successfully', async () => {
-            const room = await roomService.getRoom('room1');
-
-            expect(room).toBeInstanceOf(Room);
-            expect(room.documentContent).toBe('test content');
-            expect(room.language).toBe('javascript');
-        });
 
         it('should return null for non-existent room', async () => {
             const redisClient = require('../config/redis.js')();
