@@ -33,7 +33,7 @@ const CollaborationPage = () => {
         cpp: templateMap['cpp'],
         java: templateMap['java']
     });
-    
+
     const [cookies] = useCookies(["username", "accessToken", "userId"]);
     const { roomId } = useParams();
     const [question, setQuestion] = useState(null);
@@ -56,22 +56,22 @@ const CollaborationPage = () => {
 
     useEffect(() => {
         const userId = cookies.userId;
-        socketRef.current = io(VITE_COLLABORATION_SERVICE_API, { 
+        socketRef.current = io(VITE_COLLABORATION_SERVICE_API, {
             query: { userId },
-            reconnection: true,        
-            reconnectionAttempts: 3,    
-            reconnectionDelay: 2000,       
-            reconnectionDelayMax: 10000,   
-            timeout: 20000,                
+            reconnection: true,
+            reconnectionAttempts: 3,
+            reconnectionDelay: 2000,
+            reconnectionDelayMax: 10000,
+            timeout: 20000,
         });
-        
+
         console.log('Connecting to the collaboration service server socket');
 
         console.log('Emitting joinRoom');
         socketRef.current.emit('joinRoom', { roomId });
         console.log('Emitting first_username');
         socketRef.current.emit('first_username', { roomId, username: cookies.username });
-        
+
         socketRef.current.on('collaboration_ready', (data) => {
             setQuestion(data.question);
             setQuestionTitle(data.question["Question Title"]);
@@ -120,7 +120,7 @@ const CollaborationPage = () => {
         socketRef.current.on('reconnect_attempt', (attempt) => {
             console.log(`Attempting to reconnect... (${attempt})`);
         });
-    
+
         socketRef.current.on('reconnect_failed', () => {
             console.error('Reconnection attempts failed');
             alert('Unable to reconnect to the server');
@@ -169,18 +169,18 @@ const CollaborationPage = () => {
 
     const handleLeave = () => {
         handleUpdateHistoryNow(language, content[language]);
-        
+
         const username = cookies.username;
         console.log('Emitting custom_disconnect before navigating away');
         localStorage.clear();
-        
+
         socketRef.current.emit('custom_disconnect', { roomId, username }, () => {
             console.log('custom_disconnect acknowledged by server. Now disconnecting and navigating away.');
             navigate('/', { replace: true });
             socketRef.current.disconnect();
         });
     };
-    
+
     const handleLanguageChange = (newLanguage) => {
         const selectedLanguage = newLanguage.target.value;
         setLanguage(selectedLanguage);
@@ -214,7 +214,7 @@ const CollaborationPage = () => {
                     ],
                 })
             });
-            
+
             const result = await response.json();
             if (result) {
                 setExecutionResult(result.run.stdout || result.run.stderr);
@@ -236,7 +236,7 @@ const CollaborationPage = () => {
         }));
         socketRef.current.emit('editDocument', { roomId, language, content: templateMap[language] });
     };
-      
+
     return (
         <div className={styles.CollaborationContainer}>
             {isLoading ? (
@@ -244,26 +244,30 @@ const CollaborationPage = () => {
             ) : (
                 <>
                     <div className={styles.editorContainer}>
-                        <div className={styles.toolbar}>
-                            <select value={language} onChange={handleLanguageChange}>
-                                <option value="javascript">JavaScript</option>
-                                <option value="python">Python</option>
-                                <option value="java">Java</option>
-                                <option value="cpp">C++</option>
-                            </select>
+                        <div className={styles.codeContainer}>
+                            <div className={styles.toolbar}>
+                                <select value={language} onChange={handleLanguageChange} className={styles.dropdown}>
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="python">Python</option>
+                                    <option value="java">Java</option>
+                                    <option value="cpp">C++</option>
+                                </select>
 
-                            <select value={theme} onChange={handleThemeChange}>
-                                <option value="githubLight">Light</option>
-                                <option value="githubDark">Dark</option>
-                            </select>
+                                <select value={theme} onChange={handleThemeChange} className={styles.dropdown}>
+                                    <option value="githubLight">Light</option>
+                                    <option value="githubDark">Dark</option>
+                                </select>
+                            </div>
+                            <div className={styles.codeBox}>
+                                <CodeEditor
+                                    currentLanguage={language}
+                                    currentTheme={theme}
+                                    currentCode={content[language]}
+                                    setCurrentCode={handleEditorChange}
+                                />
+                            </div>
+
                         </div>
-
-                        <CodeEditor
-                            currentLanguage={language}
-                            currentTheme={theme}
-                            currentCode={content[language]}
-                            setCurrentCode={handleEditorChange}
-                        />
 
                         <div className={styles.codeButtons}>
                             <button onClick={handleExecuteCode} className={styles.runCodeButton} disabled={loading}>{loading ? "Running..." : "Run Code"}</button>
@@ -292,6 +296,7 @@ const CollaborationPage = () => {
                             <Chat className={styles.Chat} roomId={roomId} />
                         </div>
                     </div>
+
                 </>
             )}
         </div>
