@@ -2,7 +2,13 @@
 import collaborationController from '../controllers/collaborationController.js';
 import roomService from '../services/roomService.js';
 import clientInstance from '../models/client-model.js';
-
+jest.mock('../config/redis.js', () => {
+    const redisMock = require('redis-mock');
+    return {
+        __esModule: true,
+        default: () => redisMock.createClient(),
+    };
+});
 jest.mock('../services/roomService.js');
 jest.mock('../models/client-model.js');
 

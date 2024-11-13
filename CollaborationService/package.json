@@ -4,7 +4,11 @@
   "main": "index.js",
   "type": "module",
   "jest": {
-    "testPathIgnorePatterns": ["collaborative-editor", "testSocket.js", "testQueueService.js"]
+    "testPathIgnorePatterns": [
+      "collaborative-editor",
+      "testSocket.js",
+      "testQueueService.js"
+    ]
   },
   "scripts": {
     "start": "node app",
@@ -22,10 +26,12 @@
   "description": "",
   "dependencies": {
     "amqplib": "^0.10.4",
+    "color-convert": "^2.0.1",
     "cors": "^2.8.5",
     "express": "^4.21.1",
     "mongoose": "^8.7.3",
     "redis": "^4.7.0",
+    "redis-mock": "^0.56.3",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1"
   },

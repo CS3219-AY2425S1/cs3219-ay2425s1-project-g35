@@ -1,4 +1,4 @@
-// services/roomService.test.js
+// services/roomService.tests.js
 import roomService from '../services/roomService';
 import Room from '../models/room-model';
 
