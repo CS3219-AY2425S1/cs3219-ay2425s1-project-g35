@@ -13,7 +13,6 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    
 }
 
 .editorContainer {
@@ -22,6 +21,17 @@
     color: white;
     height: 100%; 
     overflow-x: auto;
+    border-radius: 10px;
+}
+
+.codeContainer {
+    height: fit-content;
+    border-radius: 10px;
+    overflow: auto;
+}
+
+.codeBox {
+    overflow: auto;
 }
 
 .toolbar {
@@ -31,6 +41,38 @@
     padding: 10px;
     background-color: #f1f1f1;
     border-bottom: 1px solid #ccc;
+}
+
+.dropdown {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background-color: #ffffff;
+    color: #333;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, box-shadow 0.3s, color 0.3s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    font-family: inherit;
+}
+
+.dropdown:hover {
+    background-color: #f1f1f1;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.dropdown:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+.dropdown option {
+    color: #333;
+    background-color: #ffffff;
 }
 
 .questionArea {
@@ -59,6 +101,7 @@ textarea {
     transition: background-color 0.3s ease; 
     width: 100%; 
     text-align: center;
+    font-family: inherit;
 }
 
 .leaveRoomButton:hover {
@@ -73,17 +116,33 @@ textarea {
     outline: none; 
 }
 
-.runCodeButton {
-    background-color: #253df1f0; 
-    border-radius: 8px;
-    color: white; 
-    padding: 15px;
-    margin-top: 16px;
-    margin-right: 8px;
-    font-size: 1rem; 
-    cursor: pointer; 
+.codeButtons {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.runCodeButton,
+.resetButton {
+    padding: 10px 24px;
+    margin-top: 14px;
+    font-size: 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease;
-    width: 50%; 
+    font-family: inherit;
+}
+
+.runCodeButton {
+    background-color: #ffffff;
+    color: black;
+    border: 1px solid #ddd;
+}
+
+.runCodeButton:hover {
+    background-color: #555;
 }
 
 .runCodeButton:disabled {
@@ -94,16 +153,13 @@ textarea {
 }
 
 .resetButton {
-    background-color: lightskyblue; 
-    border-radius: 8px;
-    color: white; 
-    padding: 15px;
-    margin-top: 16px;
-    margin-left: 8px;
-    font-size: 1rem; 
-    cursor: pointer; 
-    transition: background-color 0.3s ease;
-    width: 50%;
+    background-color: #444;
+    color: #ffffff;
+    border: none;
+}
+
+.resetButton:hover {
+    background-color: #f1f1f1;
 }
 
 .questionFooter {
@@ -113,11 +169,8 @@ textarea {
 
 .outputBox {
     background-color: white;
-    border-radius: 8px;
+    border-radius: 10px;
     color: black;
     padding: 15px;
 }
 
-.codeButtons {
-    display: flex;
-}

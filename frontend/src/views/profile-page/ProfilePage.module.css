@@ -132,6 +132,7 @@
 
 .tabButton {
     background-color: #2a2a4d; 
+    font-family: inherit;
     border: none;
     color: #ffffff; 
     padding: 10px 20px;
@@ -146,10 +147,10 @@
 }
 
 .tabButton.activeTab {
-    background-color: #ffffff; /* Active background color */
-    color: #2a2a4d; /* Text color when active */
-    font-weight: bold; /* Bold text when active */
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Optional shadow for emphasis */
+    background-color: #ffffff; 
+    color: #2a2a4d; 
+    font-weight: bold; 
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); 
 }
 
 .codeBlock {
@@ -186,6 +187,7 @@
 }
 
 .formGroup input {
+    font-family: inherit;
     align-items: center;
     align-content: center;
     width: 100%;
@@ -209,6 +211,7 @@
     width: 50%;
     color: white;
     padding: 10px 15px;
+    font-family: inherit;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -226,16 +229,7 @@
     cursor: not-allowed;
 }
 
-/* Success and Error Message Styling */
 .message {
     font-size: 0.9em;
     margin-top: 10px;
-}
-
-.successMessage {
-    color: #4caf50;
-}
-
-.errorMessage {
-    color: #f44336;
 }

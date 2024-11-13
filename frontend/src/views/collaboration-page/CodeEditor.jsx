@@ -1,3 +1,7 @@
+// Code editor referenced from https://github.com/SAMUDRALAARAVIND/code_deck/blob/main/src/screens/Playground/CodeEditor.jsx 
+
+import styles from './CodeEditor.module.css';
+
 import React, { useState, useEffect } from 'react'
 import CodeMirror from '@uiw/react-codemirror'
 
@@ -44,6 +48,7 @@ const CodeEditor = ({
             value={currentCode}
             height="100%"
             theme={theme}
+            className={currentTheme === 'githubDark' ? styles.codeMirrorEditorDark : styles.codeMirrorEditorLight}
             style={{ minHeight: calculateMinHeight() }}
             extensions={[
                 language,
