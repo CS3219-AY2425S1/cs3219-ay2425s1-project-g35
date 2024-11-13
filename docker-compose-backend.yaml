@@ -121,12 +121,31 @@ services:
     networks:
       - app-network
 
+  # Distributed Cache for CollaborationService
+  redis-collaboration:
+    image: redis:alpine
+    container_name: redis-collaboration
+    depends_on:
+      - rabbitmq
+    ports:
+      - "6379"
+    networks:
+      - app-network
+
   # ChatService
   chat-service:
     build: ./ChatService
     container_name: ChatService
     ports:
       - "3003"
+    networks:
+      - app-network
+
+  redis-chat:
+    image: redis:alpine
+    container_name: redis-chat
+    ports:
+      - "6379"
     networks:
       - app-network
 

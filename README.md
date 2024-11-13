@@ -116,3 +116,7 @@ If you've made changes to `nginx.conf`, you will need to bring down the project 
 Alternatively, you can use `--force-recreate`
 
 1. You can also use `docker compose up -d --build --force-recreate` to ensure that Docker recreates the nginx container
+
+### 3. If you've added a new service to the `docker-compose.yaml` file, make the same changes to the tests and backend files
+
+If not, the integration tests may fail
