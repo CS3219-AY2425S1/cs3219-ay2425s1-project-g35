@@ -88,7 +88,7 @@ function Chat({ roomId }) {
                             onChange={(e) => setMsg(e.target.value)}
                             autoComplete="off"
                         />
-                        <button className={styles.sendButton} type="submit">Send</button>
+                        <button className={styles.sendButton} type="submit">➔</button>
                     </form>
                 </div>
             )}
